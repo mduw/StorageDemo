@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
 import Messages from "./Message";
@@ -13,16 +13,6 @@ const Chatbox = () => {
   if (!user) history.push("/");
   const [message, setMessage] = useState("");
   const [conversationData, setConversationData] = useState([]);
-  ipcRenderer.on(conversation, async (event, incoming) => {
-    if (!incoming || !incoming.id) return;
-    if (
-      conversationData &&
-      conversationData.length &&
-      conversationData[conversationData.length - 1].id === incoming.id
-    )
-      return;
-    await setConversationData([...conversationData, incoming]);
-  });
 
   const handleMessageChange = (e) => {
     setMessage(e.target.value);
@@ -52,6 +42,32 @@ const Chatbox = () => {
     if (e.key === "Enter") handleSend();
   };
 
+  useEffect(() => {
+    let isUnsubscribed = false;
+    ipcRenderer.on(conversation, async (event, incoming) => {
+      if (!incoming || !incoming.id) return;
+      if (
+        conversationData &&
+        conversationData.length &&
+        conversationData[conversationData.length - 1].id === incoming.id
+      )
+        return;
+      if (!isUnsubscribed) {
+        console.log(incoming);
+        setConversationData((prevState) => {
+          return [...prevState, incoming];
+        });
+      }
+    });
+
+    return () => {
+      ipcRenderer.removeListener(conversation, () => {
+        console.log("unsubscribed");
+        isUnsubscribed = true;
+      });
+    };
+  }, []);
+
   return (
     <div>
       {conversationData && (
@@ -67,11 +83,7 @@ const Chatbox = () => {
         onChange={handleMessageChange}
         onKeyDown={handleKeyDown}
       />
-      <button
-        className="btn-send"
-        onClick={handleSend}
-        disabled={!message}
-      >
+      <button className="btn-send" onClick={handleSend} disabled={!message}>
         Send
       </button>
     </div>

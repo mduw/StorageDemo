@@ -13,7 +13,7 @@ const createWindow = () => {
     height: 680,
     webPreferences: { webSecurity: false },
   });
-  //win.webContents.openDevTools();
+  win.webContents.openDevTools();
   win.loadURL(
     isDev
       ? "http://localhost:3000"
