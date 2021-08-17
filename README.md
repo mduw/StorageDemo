@@ -4,4 +4,4 @@ Install packages <br/>
 `npm install`
 
 Run app <br/>
-`npm run electron-dev`
+`npm run chatapp`
