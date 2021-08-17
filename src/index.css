@@ -1,0 +1,123 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+.title {
+  text-align: center;
+  margin-top: 40vh;
+}
+.username {
+  display: block;
+  width: auto;
+  padding: 4px 10px;
+  height: 2em;
+  margin: 20px auto;
+  min-width: 500px;
+  font-size: 1em;
+  text-align: center;
+}
+::placeholder {
+  /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: gray;
+  opacity: 1; /* Firefox */
+  text-align: center;
+  font-style: italic;
+}
+
+.btn-login {
+  display: block;
+  background-color: #0096ff;
+  color: white;
+  box-shadow: none;
+  border: none;
+  padding: 10px;
+  height: auto;
+  width: auto;
+  margin: 20px auto;
+  border-radius: 4px;
+  font-size: 1em;
+}
+
+button:disabled,
+button[disabled] {
+  opacity: 0.5;
+}
+
+.btn {
+  opacity: 0.8;
+}
+.btn:hover {
+  cursor: pointer;
+  opacity: 1;
+}
+
+.btn-send {
+  background-color: #0096ff;
+  color: white;
+  box-shadow: none;
+  border: none;
+  padding: 10px 20px;
+  height: auto;
+  width: auto;
+  margin: 20px auto;
+  border-radius: 4px;
+  font-size: 1em;
+  float: right;
+}
+
+.chatbox-inp {
+  display: inline-block;
+  width: 75%;
+  padding: 2px 10px;
+  height: 2em;
+  margin: 20px 0;
+  font-size: 1em;
+}
+
+.msg {
+  display: block;
+  padding: 10px;
+  clear: both;
+  border-radius: 16px;
+}
+
+.msg-receiver {
+  display: block;
+  margin-top: 5px;
+  background-color: #78c7ff;
+  float: left;
+}
+.msg-sender {
+  display: block;
+  margin-top: 5px;
+  float: right;
+  background-color: #f7f7f7;
+}
+
+.msg-author {
+  padding: 0;
+  margin: 0 0 8px 0;
+}
+
+.msg-author > h3 {
+  display: inline-block;
+  border-right: 1px solid black;
+  padding: 0 8px 0 0;
+  margin: 0;
+}
+.msg-details {
+  color: #555555;
+}
+
+.chatbox-area {
+  height: 80vh;
+  position: sticky;
+  bottom: 0;
+  overflow: scroll;
+}
+
+.user-info {
+  margin-bottom: 10px;
+}
