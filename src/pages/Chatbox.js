@@ -5,23 +5,31 @@ import useUserStore from "../stores/UserStore";
 import ChatList from "./ChatList";
 import Messages from "./Message";
 import useMessageStore from "../stores/MessageStore";
+import AddUserSectionDetails from "./AddUsersSection";
 
 const electron = window.require("electron");
 const ipcRenderer = electron.ipcRenderer;
 let conversation = "chatbox-msg";
+const groupChatEvent = "create-groupchat";
 
 const Chatbox = () => {
   const history = useHistory();
+  const usersXXXXX = useUserStore(state=>state.users);
+  console.log(usersXXXXX);
   const currentUser = useUserStore((state) => state.currentUser);
+  const getUserById = useUserStore((state) => state.getUserById);
+  const updateUserChatList = useUserStore(state=>state.updateUserChatList);
 
   const currentChatID = useMessageStore((state) => state.currentChat);
   const currentChatObj = useMessageStore((state) => state.getChatById)(
     currentChatID
   );
-
-  const addMessageToChat = useMessageStore(state=>state.addMessageToChat);
-  const getChatById = useMessageStore(state=>state.getChatById);
-  const getCurrentChat = useMessageStore(state=>state.getCurrentChat);
+  const addMessageToChat = useMessageStore((state) => state.addMessageToChat);
+  const getChatById = useMessageStore((state) => state.getChatById);
+  const getCurrentChat = useMessageStore((state) => state.getCurrentChat);
+  const addNewChat = useMessageStore(state=>state.addNewChat);
+  
+  const [addingUser, setAddingUser] = useState(false);
 
   if (isEmpty(currentUser)) {
     history.push("/");
@@ -54,6 +62,7 @@ const Chatbox = () => {
       createAt: time,
       message: message,
     };
+    console.log('data2send', data2Send)
     addMessageToChat(currentChatID, data2Send);
     ipcRenderer.sendSync(conversation, data2Send);
     setMessage("");
@@ -64,7 +73,7 @@ const Chatbox = () => {
   };
 
   useEffect(() => {
-    let eventHandler = (event, incoming) => {
+    let incomingMessageHandler = (event, incoming) => {
       if (!incoming || !incoming.id) return;
       if (
         conversationData &&
@@ -73,20 +82,44 @@ const Chatbox = () => {
       )
         return;
       addMessageToChat(incoming.id, incoming);
-      
+
       // only fetch chat details if selected
       if (incoming.id === getCurrentChat()) {
-        
-        setConversationData(getChatById(getCurrentChat()).messages);        
+        setConversationData(getChatById(getCurrentChat()).messages);
       }
     };
-    ipcRenderer.on(conversation, eventHandler);
+
+    const createGroupChatHander = (event, incoming) => {
+      console.log('RECEIVED CREATE', incoming);
+      addNewChat(incoming);
+      updateUserChatList(incoming.id, incoming.users);
+    };
+    ipcRenderer.on(conversation, incomingMessageHandler);
+
+    ipcRenderer.on(groupChatEvent, createGroupChatHander);
 
     return () => {
-      ipcRenderer.removeListener(conversation, eventHandler);
+      ipcRenderer.removeListener(conversation, incomingMessageHandler);
+      ipcRenderer.removeListener(groupChatEvent, createGroupChatHander);
+
     };
   }, []);
 
+  useEffect(() => {
+    setAddingUser(false);
+  }, [currentChatID]);
+
+  const getChatboxTitle = () => {
+    let chatTitle = "";
+    currentChatObj.users.every((userId) => {
+      if (userId === currentUser.id) return true;
+      chatTitle += chatTitle ? ", " : "";
+      chatTitle += getUserById(userId).username;
+      return true;
+    });
+    return chatTitle;
+  };
+  const handleCloseAddingUser = () => setAddingUser(false);
   return (
     <div className="chat-container">
       <div className="users">
@@ -96,26 +129,47 @@ const Chatbox = () => {
         {!isEmpty(conversationData) && (
           <Fragment>
             <div className="chatbox-area">
-              <Messages data={conversationData} />
+              <div className="chatbox-header">
+                <h2 className="chatbox-title">{getChatboxTitle()}</h2>
+                <div className="btn" onClick={() => setAddingUser(!addingUser)}>
+                  Add Friends +
+                </div>
+              </div>
+              <Messages messages={conversationData} />
+              <div className="wrapper">
+                <div
+                  className={`${addingUser ? "slide wrapperslide" : "slide"}`}
+                >
+                  <div className="btn" onClick={() => setAddingUser(false)}>
+                    X
+                  </div>
+                  <div className="userList">
+                    <AddUserSectionDetails show={addingUser} currentChat={currentChatObj} close={handleCloseAddingUser} />
+                    <br />
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div className="inp-area">
-              <input
-                className="chatbox-inp"
-                placeholder="type your message..."
-                type="text"
-                value={message}
-                onChange={handleMessageChange}
-                onKeyDown={handleKeyDown}
-              />
-              <button
-                className="btn-send"
-                onClick={handleSend}
-                disabled={!message}
-              >
-                Send
-              </button>
-            </div>
+            {!addingUser && (
+              <div className="inp-area">
+                <input
+                  className="chatbox-inp"
+                  placeholder="type your message..."
+                  type="text"
+                  value={message}
+                  onChange={handleMessageChange}
+                  onKeyDown={handleKeyDown}
+                />
+                <button
+                  className="btn-blue"
+                  onClick={handleSend}
+                  disabled={!message}
+                >
+                  Send
+                </button>
+              </div>
+            )}
           </Fragment>
         )}
       </div>

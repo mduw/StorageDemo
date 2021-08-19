@@ -25,20 +25,20 @@ const ChatListDetails = ({ chatId, index }) => {
 
   const getChatTitle = () => {
     let chatTitle = "";
-    let maxUserDisplay = 2;
     chatDetail.users.every((userId) => {
-      if (userId === currentUser.id) return true;
-      maxUserDisplay--;
+      if (userId === currentUser.id) {
+        if (chatDetail.users.length > 2) chatTitle = "You, " + chatTitle;
+        return true;
+      }
       chatTitle += chatTitle ? ", " : "";
       chatTitle += getUserById(userId).username;
-      if (maxUserDisplay) return true;
-      return false;
+      return true;
     });
     return chatTitle;
   };
   const getLatestMessage = () => {
     let lastMessage =
-      chatDetail.messages[chatDetail.messages.length - 1].message;
+      chatDetail.messages[chatDetail.messages.length - 1]?.message;
     return lastMessage;
   };
   //console.log("test render child");
@@ -82,14 +82,38 @@ const ChatListDetails = ({ chatId, index }) => {
 const ChatList = () => {
   const currentUser = useUserStore((state) => state.currentUser);
   if (isEmpty(currentUser)) return null;
-  //console.log("test render parent");
+
+  const getUserById = useUserStore((state) => state.getUserById);
+  const chatList = getUserById(currentUser.id).chatList;
+  
+
+  //const [chatList, setChatList] = useState(currentUser.chatList)
+  
+  console.log("test render parent", chatList);
+
+  // useEffect(() => {
+  //   const unsubCurrentUserChatList = useUserStore.subscribe(
+  //     () => {
+  //       setChatList(getUserById(currentUser.id).chatList);
+  //     },
+  //     (state) => state.currentUser
+  //   );
+    
+
+  //   return () => {
+  //     unsubCurrentUserChatList();
+     
+  //   };
+  // }, []);
+  
+
   return (
     <div>
-      {currentUser.chatList.map((chat, index) => (
+      {chatList.map((chat, index) => (
         <ChatListDetails key={index} chatId={chat} index={index} />
       ))}
     </div>
   );
 };
 
-export default memo(ChatList);
+export default ChatList;

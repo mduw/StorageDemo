@@ -29,7 +29,7 @@ app.on("ready", () => {
   win2 = createWindow();
 });
 
-let conversation = "chatbox-msg";
+const conversation = "chatbox-msg";
 ipcMain.on(conversation, (event, message) => {
   let { id } = BrowserWindow.getFocusedWindow();
   if (id === 1) {
@@ -37,6 +37,18 @@ ipcMain.on(conversation, (event, message) => {
   }
   if (id === 2) {
     win1.webContents.send(conversation, message);
+  }
+  event.returnValue = `SUCCESS`;
+});
+
+const groupChatEvent = "create-groupchat";
+ipcMain.on(groupChatEvent, (event, message) => {
+  let { id } = BrowserWindow.getFocusedWindow();
+  if (id === 1) {
+    win2.webContents.send(groupChatEvent, message);
+  }
+  if (id === 2) {
+    win1.webContents.send(groupChatEvent, message);
   }
   event.returnValue = `SUCCESS`;
 });

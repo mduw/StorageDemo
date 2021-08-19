@@ -26,6 +26,7 @@ const initialUsers = [
 const useUserStore = create((set, get) => ({
   currentUser: {},
   users: [...initialUsers],
+  getUsers: () => get().users,
   getCurrentUser: () => get().currentUser,
   getUserById: (id) => get().users.find((user) => user.id === id),
   getUserByEmail: (email) => get().users.find((each) => each.email === email),
@@ -43,6 +44,9 @@ const useUserStore = create((set, get) => ({
     set(
       produce((state) => {
         state.users.map((user) => {
+          console.log('**New Chat', chatId);
+          console.log('**User list', userList);
+          // find matching users that have chat list needed to be updated
           if (userList.includes(user.id) && !user.chatList.includes(chatId)) {
             user.chatList.push(chatId);
           }

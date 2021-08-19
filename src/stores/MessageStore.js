@@ -1,8 +1,8 @@
 import create from "zustand";
 import produce from "immer";
-import { generateUID } from "../lib/HelperFuncs";
+import { generateUID, isEmpty } from "../lib/HelperFuncs";
 
-const createNewChat = (userList = []) => {
+export const createNewChat = (userList = []) => {
   return {
     id: generateUID(),
     users: userList,
@@ -53,8 +53,8 @@ const initialChats = [
   },
   {
     id: 4,
-    users: [4,1],
-    seenBy: [4,1],
+    users: [4, 1],
+    seenBy: [4, 1],
     messages: [
       {
         from: 1,
@@ -86,21 +86,40 @@ const useChatStore = create((set, get) => ({
   chats: [...initialChats],
   getChatById: (id) => get().chats.find((chat) => chat.id === id) || {},
   getCurrentChat: () => get().currentChat,
-  setCurrentChat: (id) => set(produce(state=>{state.currentChat = id})),
-  setSeenBy: (chatId, userId) => set(
-    produce((state) => {
+  setCurrentChat: (id) =>
+    set(
+      produce((state) => {
+        state.currentChat = id;
+      })
+    ),
+  setSeenBy: (chatId, userId) =>
+    set(
+      produce((state) => {
         let idx = state.chats.findIndex((chat) => chat.id === chatId);
         if (state.chats[idx].seenBy.includes(userId)) return;
-        state.chats[state.chats.findIndex((chat) => chat.id === chatId)].seenBy.push(userId);
-    })
-  ),
+        state.chats[
+          state.chats.findIndex((chat) => chat.id === chatId)
+        ].seenBy.push(userId);
+      })
+    ),
+  addNewChat: (NewChat) =>
+    set(
+      produce((state) => {
+        state.chats.push(NewChat);
+      })
+    ),
   addMessageToChat: (chatId, NewMessage) =>
     set(
       produce((state) => {
         let idx = state.chats.findIndex((chat) => chat.id === chatId);
-        state.chats[idx].messages.push(NewMessage);
+        if (isEmpty(state.chats[idx].messages))
+          state.chats[idx].messages = [NewMessage];
+        else
+          state.chats[idx].messages = [
+            ...state.chats[idx].messages,
+            NewMessage,
+          ];
         state.chats[idx].seenBy = [NewMessage.from];
-
       })
     ),
   addUserToChat: (userList) =>

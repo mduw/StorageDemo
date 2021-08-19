@@ -1,3 +1,5 @@
+import useUserStore from '../stores/UserStore';
+
 let guid = () => {
     let s4 = () => {
         return Math.floor((1 + Math.random()) * 0x10000)
@@ -12,4 +14,3 @@ export const generateUID = () =>{
 }
 
 export const isEmpty = (obj) => obj === null || obj === undefined || Object.keys(obj).length === 0;
-

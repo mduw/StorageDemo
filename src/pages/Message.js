@@ -1,8 +1,9 @@
 import React, { Fragment, memo } from "react";
+import { getChatTitleFromUserList } from "../lib/HelperFuncs";
 import useUserStore from "../stores/UserStore";
 
-const Message = ({ data }) => {
-  const { createAt, from, message } = data;
+const Message = ({ message }) => {
+  const { createAt, from, message: content } = message;
   const currentUser = useUserStore((state) => state.currentUser);
   const fromUserObj = useUserStore((state) => state.getUserById)(from);
 
@@ -13,17 +14,18 @@ const Message = ({ data }) => {
           from === currentUser.id ? "msg-sender" : "msg-receiver"
         }`}
       >
-        <div className="msg-author">
-          {fromUserObj && <h3>{fromUserObj.username}</h3>} {createAt}
+        <div className="msg-time">
+           {createAt}
         </div>
-        <div className="msg-details">{message}</div>
+        <div className="msg-details">{content}</div>
       </div>
     </Fragment>
   );
 };
 
-const Messages = ({ data }) => {
-  return data.map((each, index) => <Message key={index} data={each} />);
+const Messages = ({ messages }) => {
+  console.log('here')  
+  return messages.map((each, index) => <Message key={index} message={each} />)
 };
 
 export default memo(Messages);
