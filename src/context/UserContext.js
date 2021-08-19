@@ -2,20 +2,16 @@ import React, { createContext, useState, useMemo, useContext } from "react";
 
 export const UserContext = createContext({
   user: null,
-  getUsername: ()=>{},
   updateUser: () => {},
 });
 
-
-export const useUsername = () => useContext(UserContext).getUsername;
 export const useUpdateUser = () => useContext(UserContext).updateUser;
 
 export const UserProvider = ({ children }) => {
-  const [user, setUser] = useState('');
+  const [user, setUser] = useState({
+    email: '',
+  });
 
-  const getUsername = () => {
-    return user;
-  }
   const updateUser = (user) => {
     setUser(user);
   }
@@ -24,10 +20,9 @@ export const UserProvider = ({ children }) => {
     () => ({
       user,
       setUser,
-      getUsername,
       updateUser
     }),
-    [user, setUser, getUsername, updateUser]
+    [user, setUser, updateUser]
   );
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

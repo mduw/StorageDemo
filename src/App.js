@@ -1,6 +1,5 @@
 import React from "react";
 import "./App.css";
-import { UserProvider } from "./context/UserContext";
 import { BrowserRouter } from "react-router-dom";
 
 import Routes from "./Routes";
@@ -10,11 +9,8 @@ const App = () => {
   return (
     <div className="App">
       <BrowserRouter>
-        <UserProvider>
           <Header />
-
           <Routes />
-        </UserProvider>
       </BrowserRouter>
     </div>
   );

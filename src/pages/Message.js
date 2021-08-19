@@ -1,14 +1,20 @@
-import React, { Fragment, useContext } from "react";
-import { UserContext } from "../context/UserContext";
+import React, { Fragment, memo } from "react";
+import useUserStore from "../stores/UserStore";
 
 const Message = ({ data }) => {
-  const { user } = useContext(UserContext);
-  const { createdAt, from, message } = data;
+  const { createAt, from, message } = data;
+  const currentUser = useUserStore((state) => state.currentUser);
+  const fromUserObj = useUserStore((state) => state.getUserById)(from);
+
   return (
     <Fragment>
-      <div className={`msg ${from === user ? "msg-sender" : "msg-receiver"}`}>
+      <div
+        className={`msg ${
+          from === currentUser.id ? "msg-sender" : "msg-receiver"
+        }`}
+      >
         <div className="msg-author">
-          <h3>{from}</h3> {createdAt}
+          {fromUserObj && <h3>{fromUserObj.username}</h3>} {createAt}
         </div>
         <div className="msg-details">{message}</div>
       </div>
@@ -20,4 +26,4 @@ const Messages = ({ data }) => {
   return data.map((each, index) => <Message key={index} data={each} />);
 };
 
-export default Messages;
+export default memo(Messages);

@@ -8,7 +8,7 @@ body {
   text-align: center;
   margin-top: 40vh;
 }
-.username {
+.loginInp {
   display: block;
   width: auto;
   padding: 4px 10px;
@@ -53,6 +53,13 @@ button[disabled] {
   opacity: 1;
 }
 
+.inp-area {
+  display: grid;
+  grid-template-columns: auto 100px;
+  column-gap: 10px;
+  padding: 0;
+}
+
 .btn-send {
   background-color: #0096ff;
   color: white;
@@ -60,20 +67,20 @@ button[disabled] {
   border: none;
   padding: 10px 20px;
   height: auto;
-  width: auto;
-  margin: 20px auto;
+  width: 100px;
+  margin-left: 10px;
   border-radius: 4px;
   font-size: 1em;
   float: right;
 }
 
 .chatbox-inp {
-  display: inline-block;
-  width: 75%;
-  padding: 2px 10px;
+  float: left;
+  width: 96%;
   height: 2em;
-  margin: 20px 0;
   font-size: 1em;
+  min-width: 400px;
+  clear: both;
 }
 
 .msg {
@@ -116,8 +123,80 @@ button[disabled] {
   position: sticky;
   bottom: 0;
   overflow: scroll;
+  margin-bottom: 20px;
 }
 
 .user-info {
   margin-bottom: 10px;
+}
+
+.users {
+  display: inline-block;
+  border-right: 2px solid rgb(223, 223, 223);
+  overflow: scroll;
+  margin-left: -24px;
+}
+
+.chat {
+  display: inline-block;
+  padding: 10px 10px 0 10px;
+  min-height: 680px;
+  height: 100vh;
+}
+
+.chat-container {
+  display: grid;
+  grid-template-columns: 200px auto;
+}
+
+.error-login {
+  color: red;
+  text-align: center;
+  margin: -10px auto;
+}
+
+.hidden {
+  visibility: hidden;
+}
+.visible {
+  visibility: visible;
+}
+
+.chat-item {
+  border-bottom: 1px solid lightgray;
+  padding: 8px;
+  border: 0;
+  margin: 0;
+}
+
+.chat-item:hover {
+  cursor: pointer;
+  background: lightgray;
+}
+.bg {
+  background: lightgray;
+}
+.chat-item .title {
+  display: block;
+  width: auto;
+  font-weight: bold;
+  margin: 0;
+  text-align: left;
+  padding-right: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;  
+}
+.chat-item .msg-preview {
+  display: block;
+  width: auto;
+  padding-right: 8px;
+  margin: 4px auto 8px auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;  
+}
+
+.bold {
+  font-weight: bolder;
 }

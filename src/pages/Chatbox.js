@@ -1,7 +1,10 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { UserContext } from "../context/UserContext";
+import { isEmpty } from "../lib/HelperFuncs";
+import useUserStore from "../stores/UserStore";
+import ChatList from "./ChatList";
 import Messages from "./Message";
+import useMessageStore from "../stores/MessageStore";
 
 const electron = window.require("electron");
 const ipcRenderer = electron.ipcRenderer;
@@ -9,8 +12,20 @@ let conversation = "chatbox-msg";
 
 const Chatbox = () => {
   const history = useHistory();
-  const { user } = useContext(UserContext);
-  if (!user) history.push("/");
+  const currentUser = useUserStore((state) => state.currentUser);
+
+  const currentChatID = useMessageStore((state) => state.currentChat);
+  const currentChatObj = useMessageStore((state) => state.getChatById)(
+    currentChatID
+  );
+
+  const addMessageToChat = useMessageStore(state=>state.addMessageToChat);
+  const getChatById = useMessageStore(state=>state.getChatById);
+  const getCurrentChat = useMessageStore(state=>state.getCurrentChat);
+
+  if (isEmpty(currentUser)) {
+    history.push("/");
+  }
   const [message, setMessage] = useState("");
   const [conversationData, setConversationData] = useState([]);
 
@@ -18,7 +33,13 @@ const Chatbox = () => {
     setMessage(e.target.value);
   };
 
-  const handleSend = async () => {
+  useEffect(() => {
+    if (!isEmpty(currentChatObj.messages)) {
+      setConversationData(currentChatObj.messages);
+    }
+  }, [currentChatObj.messages]);
+
+  const handleSend = () => {
     if (!message) return;
     let today = new Date();
 
@@ -28,12 +49,12 @@ const Chatbox = () => {
       (today.getMinutes() < 10 ? "0" + today.getMinutes() : today.getMinutes());
 
     const data2Send = {
-      id: today.getTime(),
-      from: user,
-      createdAt: time,
+      id: currentChatID,
+      from: currentUser.id,
+      createAt: time,
       message: message,
     };
-    setConversationData([...conversationData, data2Send]);
+    addMessageToChat(currentChatID, data2Send);
     ipcRenderer.sendSync(conversation, data2Send);
     setMessage("");
   };
@@ -43,8 +64,7 @@ const Chatbox = () => {
   };
 
   useEffect(() => {
-    let isUnsubscribed = false;
-    ipcRenderer.on(conversation, async (event, incoming) => {
+    let eventHandler = (event, incoming) => {
       if (!incoming || !incoming.id) return;
       if (
         conversationData &&
@@ -52,40 +72,53 @@ const Chatbox = () => {
         conversationData[conversationData.length - 1].id === incoming.id
       )
         return;
-      if (!isUnsubscribed) {
-        console.log(incoming);
-        setConversationData((prevState) => {
-          return [...prevState, incoming];
-        });
+      addMessageToChat(incoming.id, incoming);
+      
+      // only fetch chat details if selected
+      if (incoming.id === getCurrentChat()) {
+        
+        setConversationData(getChatById(getCurrentChat()).messages);        
       }
-    });
+    };
+    ipcRenderer.on(conversation, eventHandler);
 
     return () => {
-      ipcRenderer.removeListener(conversation, () => {
-        console.log("unsubscribed");
-        isUnsubscribed = true;
-      });
+      ipcRenderer.removeListener(conversation, eventHandler);
     };
   }, []);
 
   return (
-    <div>
-      {conversationData && (
-        <div className="chatbox-area">
-          <Messages data={conversationData} />
-        </div>
-      )}
-      <input
-        className="chatbox-inp"
-        placeholder="type your message..."
-        type="text"
-        value={message}
-        onChange={handleMessageChange}
-        onKeyDown={handleKeyDown}
-      />
-      <button className="btn-send" onClick={handleSend} disabled={!message}>
-        Send
-      </button>
+    <div className="chat-container">
+      <div className="users">
+        <ChatList />
+      </div>
+      <div className="chat">
+        {!isEmpty(conversationData) && (
+          <Fragment>
+            <div className="chatbox-area">
+              <Messages data={conversationData} />
+            </div>
+
+            <div className="inp-area">
+              <input
+                className="chatbox-inp"
+                placeholder="type your message..."
+                type="text"
+                value={message}
+                onChange={handleMessageChange}
+                onKeyDown={handleKeyDown}
+              />
+              <button
+                className="btn-send"
+                onClick={handleSend}
+                disabled={!message}
+              >
+                Send
+              </button>
+            </div>
+          </Fragment>
+        )}
+      </div>
     </div>
   );
 };

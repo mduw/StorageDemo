@@ -1,18 +1,22 @@
 import React, { Fragment } from "react";
-import { useUpdateUser, useUsername } from "../context/UserContext";
+import { useHistory } from "react-router-dom";
+import { isEmpty } from "../lib/HelperFuncs";
+import useUserStore from "../stores/UserStore";
 
 const Header = () => {
-  const getUsername = useUsername();
-  const user = getUsername();
-  const updateUser = useUpdateUser();
+  const currentUser = useUserStore((state) => state.currentUser);
+  const { setCurrentUser } = useUserStore();
+  const history = useHistory();
   const handleLogout = () => {
-    updateUser("");
+    setCurrentUser({});
+    history.push("/");
   };
+
   return (
     <Fragment>
-      {user && (
+      {!isEmpty(currentUser) && (
         <div className="user-info">
-          Welcome, <b>{user}</b> |{" "}
+          Welcome, <b>{currentUser.username}</b> |{" "}
           <span className="btn" onClick={handleLogout}>
             Logout
           </span>
