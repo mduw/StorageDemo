@@ -1,11 +1,13 @@
 import React, { Fragment, memo, useEffect, useState } from "react";
-import useUserStore from "../stores/UserStore";
-import useMessageStore, {createNewChat} from '../stores/MessageStore';
+import useUserStore from "../../stores/UserStore";
+import useMessageStore, { createNewChat } from "../../stores/MessageStore";
+import { isEmpty } from "../../lib/HelperFuncs";
 
 const electron = window.require("electron");
 const ipcRenderer = electron.ipcRenderer;
 
 const UsernameTag = ({ username, id, addToSelected }) => {
+  console.log('Add user tag');
   const [selected, setSelected] = useState(false);
   const handleSelected = () => {
     setSelected(!selected);
@@ -21,37 +23,39 @@ const UsernameTag = ({ username, id, addToSelected }) => {
   );
 };
 
-const AddUserSectionDetails = ({ show, currentChat, close }) => {
-  if (!show) return null;
+const AddUserSectionDetails = ({ show, usersInGroupChat, close }) => {
+  console.log('Add users');
   // filter out people already in the conversation
   const users = useUserStore((state) => state.getUsers)().filter(
-    (user) => !currentChat.users.includes(user.id)
+    (user) => !usersInGroupChat.includes(user.id)
   );
-  const addNewChat = useMessageStore(state=>state.addNewChat);
-  const updateUserChatList = useUserStore(state=>state.updateUserChatList);
-  const usersSet = useUserStore(state=>state.users);  
-  const chatsSet = useMessageStore(state=>state.chats);
+  const updateUserChatList = useUserStore((state) => state.updateUserChatList);
+  const addNewChat = useMessageStore((state) => state.addNewChat);
 
   const [selectedUsers, setSelectedUsers] = useState([]);
+
   const handleSelected = (id) => {
     if (selectedUsers.includes(id))
       setSelectedUsers(selectedUsers.filter((userID) => userID != id));
     else setSelectedUsers((prev) => [...prev, id]);
   };
-  console.log("hereUSerAdd");
-  console.log("all users",usersSet);
-  console.log("all chats",chatsSet);
+
   const handleCreateGroupChat = () => {
-      console.log("handling send")
-    const NewUserList = [...selectedUsers, ...currentChat.users];
+    if (isEmpty(selectedUsers)) return;
+    const NewUserList = [...selectedUsers, ...usersInGroupChat];
     const NewChat = createNewChat(NewUserList);
     addNewChat(NewChat);
     updateUserChatList(NewChat.id, NewUserList);
-    //addUserToChat([...selectedUsers, ...currentChat.users]);
-    //console.log('NEWCHAT', NewChat);
+
     ipcRenderer.sendSync("create-groupchat", NewChat);
+    setSelectedUsers([]);
     close();
   };
+
+  useEffect(() => {
+    setSelectedUsers([]);
+  }, [show]);
+
   return (
     <Fragment>
       {show &&
@@ -63,7 +67,11 @@ const AddUserSectionDetails = ({ show, currentChat, close }) => {
             addToSelected={handleSelected}
           />
         ))}
-      <button className="btn-blue" onClick={handleCreateGroupChat}>
+      <button
+        className="btn-blue"
+        onClick={handleCreateGroupChat}
+        disabled={!selectedUsers.length}
+      >
         Add
       </button>
     </Fragment>

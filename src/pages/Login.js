@@ -5,21 +5,27 @@ import useUserStore from "../stores/UserStore";
 const Login = () => {
   const history = useHistory();
   const [localUser, setLocalUser] = useState({
-    email:'',
-  })
-  const [error, setError] = useState(false)
-  const {getUserByEmail, setCurrentUser} = useUserStore();
+    email: "",
+  });
+  const [error, setError] = useState(false);
+  const { getUserByEmail, setCurrentUser } = useUserStore();
 
   const handleLogin = () => {
     let validatedUser = getUserByEmail(localUser.email);
-    if (!validatedUser) { setError(true); return; };
+    if (!validatedUser) {
+      setError(true);
+      return;
+    }
     setCurrentUser(validatedUser);
     history.push("/chatbox");
   };
   const handleInputChange = (e) => {
     if (error) setError(false);
-    setLocalUser(prevState => ({...prevState, [e.target.name]: e.target.value}));
-  }
+    setLocalUser((prevState) => ({
+      ...prevState,
+      [e.target.name]: e.target.value,
+    }));
+  };
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && localUser.email) handleLogin();
   };
@@ -46,7 +52,9 @@ const Login = () => {
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
         ></input> */}
-        <div className={`error-login ${error ? "visible": "hidden"}` }>Invalid login credential! Please try again</div>
+        <div className={`error-login ${error ? "visible" : "hidden"}`}>
+          Invalid login credential! Please try again
+        </div>
         <button
           className="btn-login"
           onClick={handleLogin}

@@ -44,12 +44,12 @@ const useUserStore = create((set, get) => ({
     set(
       produce((state) => {
         state.users.map((user) => {
-          console.log('**New Chat', chatId);
-          console.log('**User list', userList);
           // find matching users that have chat list needed to be updated
           if (userList.includes(user.id) && !user.chatList.includes(chatId)) {
             user.chatList.push(chatId);
+            if (state.currentUser.id === user.id) state.currentUser = user;
           }
+          
         });
       })
     ),
