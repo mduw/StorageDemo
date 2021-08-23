@@ -1,11 +1,25 @@
-import React, { Fragment, useEffect, useState, memo } from "react";
-import useUserStore from "../stores/UserStore";
-import useMessageStore from "../stores/MessageStore";
+import React, { Fragment, useEffect, useState, memo, useRef } from "react";
+import useUserStore from "../../stores/UserStore";
+import useMessageStore from "../../stores/MessageStore";
+import VirtualizedChatList from "./VirtualizedChatList";
 
-const ChatListDetails = ({ chatID }) => {
+export const getChatTitle = (users, me, getUserById) => {
+  let chatTitle = "";
+  users.every((userID) => {
+    if (userID === me.id) {
+      if (users.length > 2)
+        chatTitle = "You" + (chatTitle ? ", " : "") + chatTitle;
+      return true;
+    }
+    chatTitle += chatTitle ? ", " : "";
+    chatTitle += getUserById(userID).username;
+    return true;
+  });
+  return chatTitle;
+};
+
+export const ChatListDetails = ({ chatID }) => {
   const currentUser = useUserStore((state) => state.currentUser);
-  //if (!chatId) return null;
-
   const getChatById = useMessageStore((state) => state.getChatById);
   const setCurrentChat = useMessageStore((state) => state.setCurrentChat);
   const getCurrentChat = useMessageStore((state) => state.getCurrentChat);
@@ -14,9 +28,7 @@ const ChatListDetails = ({ chatID }) => {
 
   const [chatDetail, setChatDetail] = useState(getChatById(chatID));
   const [currentChatId, setCurrentChatId] = useState(getCurrentChat());
-  const [isSelected, setIsSelected] = useState(false);
   const [isSeen, setIsSeen] = useState(true);
-
   const [chatPreview, setChatPreview] = useState({
     title: "",
     message: "",
@@ -25,31 +37,11 @@ const ChatListDetails = ({ chatID }) => {
   const handleSelectedChat = () => {
     setCurrentChat(chatID);
     setIsSeen(true);
-    setIsSelected(true);
     if (!chatDetail.seenBy.includes(currentUser.id)) {
       setSeenBy(chatID, currentUser.id);
-      
     }
   };
 
-  const getChatTitle = () => {
-    let chatTitle = "";
-    chatDetail.users.every((userId) => {
-      if (userId === currentUser.id) {
-        if (chatDetail.users.length > 2) chatTitle = "You, " + chatTitle;
-        return true;
-      }
-      chatTitle += chatTitle ? ", " : "";
-      chatTitle += getUserById(userId).username;
-      return true;
-    });
-    return chatTitle;
-  };
-  const getLatestMessage = () => {
-    let lastMessage =
-      chatDetail.messages[chatDetail.messages.length - 1]?.message;
-    return lastMessage;
-  };
   useEffect(() => {
     setChatPreview((prev) => ({
       ...prev,
@@ -59,7 +51,11 @@ const ChatListDetails = ({ chatID }) => {
   }, [chatDetail]);
 
   useEffect(() => {
-    const previewTitle = getChatTitle();
+    const previewTitle = getChatTitle(
+      chatDetail.users,
+      currentUser,
+      getUserById
+    );
     setChatPreview((prev) => ({ ...prev, title: previewTitle }));
     const unsubGetChatById = useMessageStore.subscribe(
       () => {
@@ -86,7 +82,9 @@ const ChatListDetails = ({ chatID }) => {
     <Fragment>
       <div
         onClick={handleSelectedChat}
-        className={`chat-item ${chatID === currentChatId && "bg"} ${!isSeen && "bold"}`}
+        className={`chat-item ${chatID === currentChatId && "bg"} ${
+          !isSeen && "bold"
+        }`}
       >
         <div className="title">{chatPreview.title}</div>
         <div className="msg-preview">{chatPreview.message}</div>
@@ -98,6 +96,17 @@ const ChatListDetails = ({ chatID }) => {
 const ChatList = () => {
   const { getCurrentUser } = useUserStore();
   const [currentChatList, setCurrentChatList] = useState([]);
+  const [observed, setObserved] = useState();
+  const [dimension, setDimension] = useState({ width: 0, height: 0 });
+
+  useEffect(() => {
+    if (!observed) return;
+    console.log(observed.clientHeight, observed.clientWidth);
+    setDimension({
+      height: observed.clientHeight,
+      width: observed.clientWidth,
+    });
+  }, [observed]);
 
   useEffect(() => {
     // retrieve current chatList
@@ -113,12 +122,17 @@ const ChatList = () => {
     );
     return () => unsub_CurrentChatList();
   }, []);
+
   return (
-    <Fragment>
-      <div className="users">
-      {currentChatList.map((chatID) => <ChatListDetails key={chatID} chatID={chatID} />)}
-      </div>
-    </Fragment>
+    <div
+      ref={(el) => setObserved(el)}
+      style={{ width: "100%", height: "100%" }}
+    >
+      {/* {currentChatList.map((chatID) => (
+        <ChatListDetails key={chatID} chatID={chatID} />
+      ))} */}
+      <VirtualizedChatList data={currentChatList} dimension={dimension} />
+    </div>
   );
 };
 

@@ -2,12 +2,24 @@ import React, { Fragment, memo, useEffect, useState } from "react";
 import useUserStore from "../../stores/UserStore";
 import useMessageStore, { createNewChat } from "../../stores/MessageStore";
 import { isEmpty } from "../../lib/HelperFuncs";
+import SDefault from "../DefaultStyledComp";
 
 const electron = window.require("electron");
 const ipcRenderer = electron.ipcRenderer;
 
+const createGroupChatFromUsers = (
+  NewUserList,
+  createChat,
+  addChatToUserList
+) => {
+  const NewChat = createNewChat(NewUserList);
+  createChat(NewChat);
+  addChatToUserList(NewChat.id, NewUserList);
+  //  trigger other window
+  ipcRenderer.sendSync("create-groupchat", NewChat);
+};
+
 const UsernameTag = ({ username, id, addToSelected }) => {
-  console.log('Add user tag');
   const [selected, setSelected] = useState(false);
   const handleSelected = () => {
     setSelected(!selected);
@@ -24,7 +36,6 @@ const UsernameTag = ({ username, id, addToSelected }) => {
 };
 
 const AddUserSectionDetails = ({ show, usersInGroupChat, close }) => {
-  console.log('Add users');
   // filter out people already in the conversation
   const users = useUserStore((state) => state.getUsers)().filter(
     (user) => !usersInGroupChat.includes(user.id)
@@ -43,18 +54,15 @@ const AddUserSectionDetails = ({ show, usersInGroupChat, close }) => {
   const handleCreateGroupChat = () => {
     if (isEmpty(selectedUsers)) return;
     const NewUserList = [...selectedUsers, ...usersInGroupChat];
-    const NewChat = createNewChat(NewUserList);
-    addNewChat(NewChat);
-    updateUserChatList(NewChat.id, NewUserList);
-
-    ipcRenderer.sendSync("create-groupchat", NewChat);
+    createGroupChatFromUsers(NewUserList, addNewChat, updateUserChatList);
     setSelectedUsers([]);
     close();
   };
 
   useEffect(() => {
     setSelectedUsers([]);
-  }, [show]);
+    return () => setSelectedUsers([]);
+  }, [show, usersInGroupChat]);
 
   return (
     <Fragment>
@@ -67,13 +75,12 @@ const AddUserSectionDetails = ({ show, usersInGroupChat, close }) => {
             addToSelected={handleSelected}
           />
         ))}
-      <button
-        className="btn-blue"
+      <SDefault.Btn
         onClick={handleCreateGroupChat}
         disabled={!selectedUsers.length}
       >
         Add
-      </button>
+      </SDefault.Btn>
     </Fragment>
   );
 };

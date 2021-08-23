@@ -1,14 +1,8 @@
-import React, { Fragment, memo, useState, useEffect } from "react";
-import { getChatTitleFromUserList } from "../../lib/HelperFuncs";
+import React, { Fragment, memo } from "react";
 import useUserStore from "../../stores/UserStore";
-import useMessageStore from "../../stores/MessageStore";
+import VirtualizedList from "./List";
 
-const electron = window.require("electron");
-const ipcRenderer = electron.ipcRenderer;
-let conversation = "chatbox-msg";
-const groupChatEvent = "create-groupchat";
-
-const Message = ({ message }) => {
+export const Message = ({ message }) => {
   const { createAt, from, message: content } = message;
   const currentUser = useUserStore((state) => state.currentUser);
   return (
@@ -25,11 +19,14 @@ const Message = ({ message }) => {
   );
 };
 
-const Messages = ({messages}) => {
+const Messages = ({ messages, dimension }) => {
   return (
     <Fragment>
-      {messages && messages.length &&
-        messages.map((each, index) => <Message key={index} message={each} />)}
+      {messages && messages.length ? (
+        <VirtualizedList data={messages} dimension={dimension} />
+      ) : (
+        <div>No message found</div>
+      )}
     </Fragment>
   );
 };

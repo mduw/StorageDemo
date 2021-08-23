@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { isEmpty } from "../lib/HelperFuncs";
 import useUserStore from "../stores/UserStore";
-import ChatList from "../components/ChatList";
 import useMessageStore from "../stores/MessageStore";
-import ChatDetails from "../components/Chatbox";
+import ChatList from "../components/Chat/ChatList";
+import ChatDetails from "../components/Chat/ChatDetails";
+import ResizableChatWindow from "../components/Chat/ResizableChat";
 
 const electron = window.require("electron");
 const ipcRenderer = electron.ipcRenderer;
@@ -47,11 +48,11 @@ const Chatbox = () => {
     setConversationData((prev) => [...prev, data2Send]);
   };
 
-  useEffect(() => {
-    if (!isEmpty(currentChatInfo.messages)) {
-      setConversationData(currentChatInfo.messages);
-    }
-  }, [currentChatInfo.messages]);
+  // useEffect(() => {
+  //   if (!isEmpty(currentChatInfo.messages)) {
+  //     setConversationData(currentChatInfo.messages);
+  //   }
+  // }, [currentChatInfo.messages]);
 
   useEffect(() => {
     if (isEmpty(currentUser)) {
@@ -86,6 +87,7 @@ const Chatbox = () => {
     const createGroupChatHander = (event, incoming) => {
       addNewChat(incoming);
       updateUserChatList(incoming.id, incoming.users);
+      setConversationData([]);
     };
     ipcRenderer.on(groupChatEvent, createGroupChatHander);
     return () => {
@@ -93,11 +95,26 @@ const Chatbox = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const unsub_CurrentChat = useMessageStore.subscribe(
+      (curID, prevID) => {
+        if (curID !== prevID) {
+          const curChat = getChatById(curID).messages || [];
+          setConversationData(curChat);
+        }
+      },
+      (state) => state.currentChat
+    );
+    return () => unsub_CurrentChat();
+  }, []);
+
   return (
-    <div className="chat-container">
-      <ChatList />
-      <ChatDetails data={conversationData} handleSend={handleSend} />
-    </div>
+    <ResizableChatWindow
+      ChatList={<ChatList />}
+      ChatDetails={
+        <ChatDetails data={conversationData} handleSend={handleSend} />
+      }
+    />
   );
 };
 

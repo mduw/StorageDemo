@@ -1,3 +1,8 @@
+:root {
+  --primary-color: #0096ff;
+  --secondary-color: #b1deff;
+  --gray: #f5f5f5;
+}
 body {
   margin: 0;
   padding: 0;
@@ -8,15 +13,22 @@ body {
   margin: 0;
   padding: 0;
 }
-.title {
-  text-align: center;
-  margin-top: 40vh;
+
+.container {
+  height: 100vh;
+  width: auto;
 }
+
+.center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .loginInp {
   display: block;
   width: auto;
-  padding: 4px 10px;
-  height: 2em;
+  padding: 10px;
   margin: 20px auto;
   min-width: 500px;
   font-size: 1em;
@@ -32,7 +44,7 @@ body {
 
 .btn-login {
   display: block;
-  background-color: #0096ff;
+  background-color: var(--primary-color);
   color: white;
   box-shadow: none;
   border: none;
@@ -44,10 +56,10 @@ body {
   font-size: 1em;
 }
 
-button:disabled,
+/* button:disabled,
 button[disabled] {
   opacity: 0.5;
-}
+} */
 
 .btn {
   opacity: 0.8;
@@ -59,14 +71,15 @@ button[disabled] {
 }
 
 .inp-area {
-  display: grid;
+  /* display: grid;
   grid-template-columns: auto 100px;
   column-gap: 10px;
-  padding: 0;
+  padding: 0; */
+  display: block;
 }
 
 .btn-blue {
-  background-color: #0096ff;
+  background-color: var(--primary-color);
   color: white;
   box-shadow: none;
   border: none;
@@ -79,34 +92,27 @@ button[disabled] {
   float: right;
 }
 
-.chatbox-inp {
+/* .chatbox-inp {
   float: left;
   width: 96%;
   height: 2em;
   font-size: 1em;
   min-width: 400px;
   clear: both;
-}
-
-.msg {
-  display: block;
-  padding: 10px;
-  clear: both;
-  border-radius: 16px;
-}
+} */
 
 .msg-receiver {
   display: block;
   margin-top: 5px;
   padding: 8px;
-  background-color: #78c7ff;
+  background-color: white;
   float: left;
 }
 .msg-sender {
   display: block;
   margin-top: 5px;
   float: right;
-  background-color: #f7f7f7;
+  background-color: var(--secondary-color);
 }
 
 .msg-time {
@@ -117,12 +123,7 @@ button[disabled] {
   color: #555555;
   font-weight: bold;
 }
-.msg-details {
-  float: left;
-  clear: both;
-  min-width: 50px;
-  max-width: 20rem;
-}
+
 .msg-author > h3 {
   display: inline-block;
   border-right: 1px solid black;
@@ -131,11 +132,11 @@ button[disabled] {
 }
 
 .chatbox-area {
-  height: 80vh;
-  position: sticky;
-  bottom: 0;
-  overflow: scroll;
-  margin-bottom: 20px;
+  /* height: 80vh; */
+  width: 100%;
+  /* bottom: 0; */
+  /* overflow: scroll; */
+  /* margin-bottom: 20px; */
 }
 
 .chatbox-area .adduser {
@@ -147,7 +148,7 @@ button[disabled] {
 .wrapper {
   position: absolute;
   overflow: hidden;
-  width: 90%;
+  width: 100%;
   right: 0;
   height: 100%;
   z-index: 10;
@@ -168,7 +169,10 @@ button[disabled] {
   padding: 10px;
   color: black;
 }
-.userList { width: 100%; text-align: center;}
+.userList {
+  width: 100%;
+  text-align: center;
+}
 .userList button {
   margin-top: 20px;
   width: 100%;
@@ -200,11 +204,6 @@ button[disabled] {
   right: 0;
 }
 
-.chatbox-header {
-  padding: 0 0 10px 0;
-  margin: 0 0 10px 0;
-  border-bottom: 1px solid lightgray;
-}
 .chatbox-header .btn {
   float: right;
   font-size: 1em;
@@ -224,22 +223,73 @@ button[disabled] {
   text-overflow: ellipsis;
 }
 
+.chatbox-block {
+  height: calc(100% - 120px);
+}
+.chatbox-header {
+  padding: 10px;
+  border-bottom: 1px solid lightgray;
+  height: auto;
+}
+
+.msg-details {
+  position: relative;
+  float: left;
+  clear: both;
+  min-width: 50px;
+  max-width: 20rem;
+  height: 100%;
+  white-space: pre-wrap;  
+}
+
+.float-right {
+  float: right;
+}
+
+.chatbox-message {
+  background-color: var(--gray);
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  padding: 20px auto;
+  padding: 4px;
+}
+
+.msg {
+  position: relative;
+  display: block;
+  padding: 10px;
+  clear: both;
+  border-radius: 16px;
+  height: auto;
+}
+
 .user-info {
-  margin-bottom: 10px;
+  display: block;
+  padding: 10px;
 }
 
 .users {
   display: inline-block;
   border-right: 2px solid rgb(223, 223, 223);
   overflow: scroll;
-  margin-left: -24px;
+  /* margin-left: -24px; */
 }
 
 .chat {
   display: inline-block;
-  padding: 10px 10px 0 10px;
+  /* padding: 10px 10px 0 10px;
   min-height: 680px;
-  height: 100vh;
+  height: 100vh; */
+}
+
+.newinp {
+  position: absolute;
+  bottom: 0;
+  width: calc(100% - 16px);
+  resize: none;
+  margin: 0;
+  padding: 0;
 }
 
 .chat-container {

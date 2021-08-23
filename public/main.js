@@ -1,16 +1,17 @@
 const electron = require("electron");
-const ipcMain = electron.ipcMain;
-const app = electron.app;
-const BrowserWindow = electron.BrowserWindow;
-
 const path = require("path");
-const url = require("url");
 const isDev = require("electron-is-dev");
 
-const createWindow = () => {
+const {BrowserWindow, app, ipcMain} = electron;
+
+const createWindow = (dimensions) => {
   let win = new BrowserWindow({
-    width: 900,
-    height: 680,
+    width: parseInt(dimensions.width * 0.6),
+    height: parseInt(dimensions.height * 0.8),
+    minWidth: parseInt(dimensions.width * 0.45),
+    minHeight: parseInt(dimensions.height * 0.6),
+    maxWidth: dimensions.width,
+    maxHeight: dimensions.height,
     webPreferences: { webSecurity: false },
   });
   win.webContents.openDevTools();
@@ -25,8 +26,11 @@ const createWindow = () => {
 let win1;
 let win2;
 app.on("ready", () => {
-  win1 = createWindow();
-  win2 = createWindow();
+  const electronScreen = electron.screen;
+  const display = electronScreen.getPrimaryDisplay();
+  const dimensions = display.workAreaSize;
+  win1 = createWindow(dimensions);
+  win2 = createWindow(dimensions);
 });
 
 const conversation = "chatbox-msg";

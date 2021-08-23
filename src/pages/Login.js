@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import useUserStore from "../stores/UserStore";
+import StyledLogin from "../components/Login/StyledComp";
 
 const Login = () => {
   const history = useHistory();
@@ -31,39 +32,26 @@ const Login = () => {
   };
 
   return (
-    <div className="container">
-      <div className="vertical-center">
-        <h2 className="title">Welcome to Simple Chatapp</h2>
-        <input
-          className="loginInp"
-          type="text"
+    <StyledLogin.Wrapper>
+      <StyledLogin.Main>
+        <h2>Welcome to Simple Chatapp</h2>
+        <StyledLogin.InputField
+          type="email"
           name="email"
           placeholder="Email"
           value={localUser.email}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-        ></input>
-        {/* <input
-          className="loginInp"
-          type="text"
-          name="username"
-          placeholder="Username"
-          value={localUser.username}
-          onChange={handleInputChange}
-          onKeyDown={handleKeyDown}
-        ></input> */}
+        ></StyledLogin.InputField>
+
         <div className={`error-login ${error ? "visible" : "hidden"}`}>
           Invalid login credential! Please try again
         </div>
-        <button
-          className="btn-login"
-          onClick={handleLogin}
-          disabled={!localUser.email}
-        >
+        <StyledLogin.Btn onClick={handleLogin} disabled={!localUser.email}>
           Login me in
-        </button>
-      </div>
-    </div>
+        </StyledLogin.Btn>
+      </StyledLogin.Main>
+    </StyledLogin.Wrapper>
   );
 };
 
