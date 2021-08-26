@@ -2,7 +2,7 @@ import React, { useState, useEffect, memo } from "react";
 import useUserStore from "../../../stores/UserStore";
 import useMessageStore from "../../../stores/MessageStore";
 import { isEmpty } from "../../../lib/HelperFuncs";
-import { getChatTitle } from "../ChatList";
+import { getChatTitle } from "../VirtualizedChatList";
 
 const ChatboxTitle = () => {
   const getChatById = useMessageStore((state) => state.getChatById);

@@ -3,7 +3,6 @@ import ReactDOM from "react-dom";
 import { CellMeasurer, CellMeasurerCache } from "react-virtualized";
 import { Message } from "./Message";
 import SChatbox from "./StyledComp";
-import "./styles.css";
 
 const VirtualizedList = ({ data, dimension }) => {
   const cellMeasurerCache = new CellMeasurerCache({

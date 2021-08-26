@@ -5,7 +5,7 @@ import useUserStore from "../stores/UserStore";
 import useMessageStore from "../stores/MessageStore";
 import ChatList from "../components/Chat/ChatList";
 import ChatDetails from "../components/Chat/ChatDetails";
-import ResizableChatWindow from "../components/Chat/ResizableChat";
+import ResizableChatWindow from "../components/Chat/";
 
 const electron = window.require("electron");
 const ipcRenderer = electron.ipcRenderer;
@@ -47,12 +47,6 @@ const Chatbox = () => {
     ipcRenderer.sendSync(conversation, data2Send);
     setConversationData((prev) => [...prev, data2Send]);
   };
-
-  // useEffect(() => {
-  //   if (!isEmpty(currentChatInfo.messages)) {
-  //     setConversationData(currentChatInfo.messages);
-  //   }
-  // }, [currentChatInfo.messages]);
 
   useEffect(() => {
     if (isEmpty(currentUser)) {
