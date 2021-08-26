@@ -1,8 +1,8 @@
 import React, { Fragment, useEffect, useState, memo } from "react";
-import useUserStore from "../../stores/UserStore";
+import useUserStore from "../../../stores/UserStore";
 import VirtualizedChatList from "./VirtualizedChatList";
-import { isEmpty } from "../../lib/HelperFuncs";
-import SChatbox from "./StyledComp";
+import { isEmpty } from "../../../lib/HelperFuncs";
+import SChatbox from "../StyledComp";
 
 const ChatList = () => {
   const { getCurrentUser } = useUserStore();

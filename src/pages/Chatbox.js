@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, lazy, Suspense } from "react";
 import { useHistory } from "react-router-dom";
 import { isEmpty } from "../lib/HelperFuncs";
 import useUserStore from "../stores/UserStore";
 import useMessageStore from "../stores/MessageStore";
-import ChatList from "../components/Chat/ChatList";
-import ChatDetails from "../components/Chat/ChatDetails";
-import ResizableChatWindow from "../components/Chat/";
+import ResizableChatWindow from "../components/Chat";
+
+const ChatList = lazy(() => import("../components/Chat/ChatList"));
+const ChatDetails = lazy(() => import("../components/Chat/Messages"));
 
 const electron = window.require("electron");
 const ipcRenderer = electron.ipcRenderer;
@@ -19,9 +20,6 @@ const Chatbox = () => {
   const updateUserChatList = useUserStore((state) => state.updateUserChatList);
 
   const currentChatID = useMessageStore((state) => state.currentChat);
-  const currentChatInfo = useMessageStore((state) => state.getChatById)(
-    currentChatID
-  );
   const addMessageToChat = useMessageStore((state) => state.addMessageToChat);
   const getChatById = useMessageStore((state) => state.getChatById);
   const getCurrentChat = useMessageStore((state) => state.getCurrentChat);
@@ -104,9 +102,15 @@ const Chatbox = () => {
 
   return (
     <ResizableChatWindow
-      ChatList={<ChatList />}
+      ChatList={
+        <Suspense fallback={<div>Loading chat list</div>}>
+          <ChatList />
+        </Suspense>
+      }
       ChatDetails={
-        <ChatDetails data={conversationData} handleSend={handleSend} />
+        <Suspense fallback={<div>Loading chat box</div>}>
+          <ChatDetails data={conversationData} handleSend={handleSend} />
+        </Suspense>
       }
     />
   );

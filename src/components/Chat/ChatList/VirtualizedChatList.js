@@ -1,24 +1,10 @@
 import React, { memo, useRef, useEffect, useState, Fragment } from "react";
 import ReactDOM from "react-dom";
 import { List, CellMeasurer, CellMeasurerCache } from "react-virtualized";
-import SChatbox from "./StyledComp";
-import useUserStore from "../../stores/UserStore";
-import useMessageStore from "../../stores/MessageStore";
-
-export const getChatTitle = (users, me, getUserById) => {
-  let chatTitle = "";
-  users.every((userID) => {
-    if (userID === me.id) {
-      if (users.length > 2)
-        chatTitle = "You" + (chatTitle ? ", " : "") + chatTitle;
-      return true;
-    }
-    chatTitle += chatTitle ? ", " : "";
-    chatTitle += getUserById(userID).username;
-    return true;
-  });
-  return chatTitle;
-};
+import useUserStore from "../../../stores/UserStore";
+import useMessageStore from "../../../stores/MessageStore";
+import SChatbox from "../StyledComp";
+import { getChatTitle } from "../ChatboxHeader/ChatTitle";
 
 export const ChatListDetails = memo(({ chatID }) => {
   const currentUser = useUserStore((state) => state.currentUser);

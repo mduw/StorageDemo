@@ -1,12 +1,12 @@
 import React, { useState, memo, useEffect, useRef } from "react";
 import AddUserSection from "./AddUserSection";
-import ChatboxTitle from "./ChatboxHeader/ChatboxTitle";
-import AddFriendsBtn from "./ChatboxHeader/AddFriendsBtn";
+import ChatboxTitle from "../ChatboxHeader/ChatTitle";
+import AddFriendsBtn from "../ChatboxHeader/AddFriendsBtn";
 import Messages from "./Message";
-import useMessageStore from "../../stores/MessageStore";
+import useMessageStore from "../../../stores/MessageStore";
 
 const ChatboxMain = ({ messages, ChatboxInput }) => {
-  const currentChat = useMessageStore(state=>state.currentChat);
+  const currentChat = useMessageStore((state) => state.currentChat);
   const [addingUser, setAddingUser] = useState(false);
   const [observed, setObserved] = useState();
   const [dimension, setDimension] = useState({ width: 0, height: 0 });
@@ -33,7 +33,7 @@ const ChatboxMain = ({ messages, ChatboxInput }) => {
     };
   }, [observed]);
 
-  if (!currentChat) return (<></>)
+  if (!currentChat) return <></>;
   return (
     <>
       <div className="chatbox-block">
@@ -43,13 +43,11 @@ const ChatboxMain = ({ messages, ChatboxInput }) => {
         </div>
 
         <div className="chatbox-message" ref={(el) => setObserved(el)}>
-          {!addingUser && (
-            <Messages messages={messages} dimension={dimension} />
-          )}
           <AddUserSection show={addingUser} close={quitCreatingGroupChat} />
+          <Messages messages={messages} dimension={dimension} />
         </div>
       </div>
-      {!addingUser && ChatboxInput}
+      {ChatboxInput}
     </>
   );
 };

@@ -148,10 +148,9 @@ button[disabled] {
 .wrapper {
   position: absolute;
   overflow: hidden;
-  width: 100%;
+  width: 50%;
   right: 0;
   height: 100%;
-  z-index: 10;
 }
 
 .wrapper .btn {
@@ -175,7 +174,7 @@ button[disabled] {
 }
 .userList button {
   margin-top: 20px;
-  width: 100%;
+  width: auto;
 }
 
 .usernameTag {
@@ -197,11 +196,13 @@ button[disabled] {
   height: 100%;
   background: white;
   transition: 0.5s;
+  z-index: 10;
 }
 
 .wrapperslide {
   transition: 0.5s;
   right: 0;
+  bottom: 10px;
 }
 
 .chatbox-header .btn {
@@ -239,7 +240,7 @@ button[disabled] {
   min-width: 50px;
   max-width: 20rem;
   height: 100%;
-  white-space: pre-wrap;  
+  white-space: pre-wrap;
 }
 
 .float-right {

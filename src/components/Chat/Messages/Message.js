@@ -1,6 +1,6 @@
 import React, { Fragment, memo } from "react";
-import useUserStore from "../../stores/UserStore";
-import VirtualizedList from "./List";
+import useUserStore from "../../../stores/UserStore";
+import VirtualizedMessageList from "./MessageList";
 
 export const Message = memo(({ message }) => {
   const { createAt, from, message: content } = message;
@@ -23,7 +23,7 @@ const Messages = ({ messages, dimension }) => {
   return (
     <Fragment>
       {messages && messages.length ? (
-        <VirtualizedList data={messages} dimension={dimension} />
+        <VirtualizedMessageList data={messages} dimension={dimension} />
       ) : (
         <div>No message found</div>
       )}

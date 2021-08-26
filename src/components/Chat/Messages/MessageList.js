@@ -1,10 +1,10 @@
 import React, { memo, useRef, useEffect } from "react";
 import ReactDOM from "react-dom";
 import { CellMeasurer, CellMeasurerCache } from "react-virtualized";
+import SChatbox from "../StyledComp";
 import { Message } from "./Message";
-import SChatbox from "./StyledComp";
 
-const VirtualizedList = ({ data, dimension }) => {
+const VirtualizedMessageList = ({ data, dimension }) => {
   const cellMeasurerCache = new CellMeasurerCache({
     fixedWidth: true,
   });
@@ -36,4 +36,4 @@ const VirtualizedList = ({ data, dimension }) => {
   );
 };
 
-export default memo(VirtualizedList);
+export default memo(VirtualizedMessageList);

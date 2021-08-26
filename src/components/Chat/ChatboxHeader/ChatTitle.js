@@ -2,7 +2,21 @@ import React, { useState, useEffect, memo } from "react";
 import useUserStore from "../../../stores/UserStore";
 import useMessageStore from "../../../stores/MessageStore";
 import { isEmpty } from "../../../lib/HelperFuncs";
-import { getChatTitle } from "../VirtualizedChatList";
+
+export const getChatTitle = (users, me, getUserById) => {
+  let chatTitle = "";
+  users.every((userID) => {
+    if (userID === me.id) {
+      if (users.length > 2)
+        chatTitle = "You" + (chatTitle ? ", " : "") + chatTitle;
+      return true;
+    }
+    chatTitle += chatTitle ? ", " : "";
+    chatTitle += getUserById(userID).username;
+    return true;
+  });
+  return chatTitle;
+};
 
 const ChatboxTitle = () => {
   const getChatById = useMessageStore((state) => state.getChatById);

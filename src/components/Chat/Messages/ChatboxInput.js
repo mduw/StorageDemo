@@ -1,5 +1,6 @@
 import React, { useState, memo } from "react";
-import SChatbox from "./StyledComp";
+import SChatbox from "../StyledComp";
+
 
 function ChatboxInput({ sendData }) {
   const [input, setInput] = useState("");

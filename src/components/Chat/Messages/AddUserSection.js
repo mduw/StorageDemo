@@ -1,6 +1,6 @@
 import React, { useState, useEffect, memo } from "react";
 import AddUserSectionDetails from "./AddUsersSectionDetails";
-import useMessageStore from "../../stores/MessageStore";
+import useMessageStore from "../../../stores/MessageStore";
 
 const AddUserSection = ({ show, close }) => {
   const getChatById = useMessageStore((state) => state.getChatById);

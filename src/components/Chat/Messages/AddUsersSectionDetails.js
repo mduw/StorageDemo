@@ -1,8 +1,8 @@
 import React, { Fragment, memo, useEffect, useState } from "react";
-import useUserStore from "../../stores/UserStore";
-import useMessageStore, { createNewChat } from "../../stores/MessageStore";
-import { isEmpty } from "../../lib/HelperFuncs";
-import SDefault from "../DefaultStyledComp";
+import useUserStore from "../../../stores/UserStore";
+import useMessageStore, { createNewChat } from "../../../stores/MessageStore";
+import { isEmpty } from "../../../lib/HelperFuncs";
+import SDefault from "../../DefaultStyledComp";
 
 const electron = window.require("electron");
 const ipcRenderer = electron.ipcRenderer;
