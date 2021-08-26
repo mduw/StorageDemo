@@ -3,11 +3,11 @@ import ReactDOM from "react-dom";
 import { List, CellMeasurer, CellMeasurerCache } from "react-virtualized";
 import { Message } from "./Message";
 import SChatbox from "./StyledComp";
-import {ChatListDetails} from './ChatList';
+import { ChatListDetails } from "./ChatList";
 import "./styles.css";
 
 const VirtualizedChatList = ({ data, dimension }) => {
-    console.log(dimension);
+  //console.log(dimension);
   const cellMeasurerCache = new CellMeasurerCache({
     fixedWidth: true,
   });
@@ -20,9 +20,9 @@ const VirtualizedChatList = ({ data, dimension }) => {
         parent={parent}
       >
         <div style={style}>
-          <div style={{ padding: "0 0.1em 1.5em 0", marginBottom: "1.5em" }}>
-          <ChatListDetails key={key} chatID={data[index]} />
-          </div>
+          <SChatbox.ChatListDetailsWrapper>
+            <ChatListDetails key={key} chatID={data[index]} />
+          </SChatbox.ChatListDetailsWrapper>
         </div>
       </CellMeasurer>
     );

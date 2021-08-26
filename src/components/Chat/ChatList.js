@@ -1,7 +1,9 @@
-import React, { Fragment, useEffect, useState, memo, useRef } from "react";
+import React, { Fragment, useEffect, useState, memo } from "react";
 import useUserStore from "../../stores/UserStore";
 import useMessageStore from "../../stores/MessageStore";
 import VirtualizedChatList from "./VirtualizedChatList";
+import { isEmpty } from "../../lib/HelperFuncs";
+import SChatbox from "./StyledComp";
 
 export const getChatTitle = (users, me, getUserById) => {
   let chatTitle = "";
@@ -18,7 +20,7 @@ export const getChatTitle = (users, me, getUserById) => {
   return chatTitle;
 };
 
-export const ChatListDetails = ({ chatID }) => {
+export const ChatListDetails = memo(({ chatID }) => {
   const currentUser = useUserStore((state) => state.currentUser);
   const getChatById = useMessageStore((state) => state.getChatById);
   const setCurrentChat = useMessageStore((state) => state.setCurrentChat);
@@ -91,21 +93,30 @@ export const ChatListDetails = ({ chatID }) => {
       </div>
     </Fragment>
   );
-};
+});
 
 const ChatList = () => {
   const { getCurrentUser } = useUserStore();
   const [currentChatList, setCurrentChatList] = useState([]);
   const [observed, setObserved] = useState();
-  const [dimension, setDimension] = useState({ width: 0, height: 0 });
+  const [dimension, setDimension] = useState({});
 
   useEffect(() => {
     if (!observed) return;
-    console.log(observed.clientHeight, observed.clientWidth);
     setDimension({
       height: observed.clientHeight,
       width: observed.clientWidth,
     });
+    function resizeHandler() {
+      setDimension({
+        height: observed.clientHeight,
+        width: observed.clientWidth,
+      });
+    }
+    window.addEventListener("resize", resizeHandler);
+    return () => {
+      window.removeEventListener("resize", resizeHandler);
+    };
   }, [observed]);
 
   useEffect(() => {
@@ -122,17 +133,12 @@ const ChatList = () => {
     );
     return () => unsub_CurrentChatList();
   }, []);
-
   return (
-    <div
-      ref={(el) => setObserved(el)}
-      style={{ width: "100%", height: "100%" }}
-    >
-      {/* {currentChatList.map((chatID) => (
-        <ChatListDetails key={chatID} chatID={chatID} />
-      ))} */}
-      <VirtualizedChatList data={currentChatList} dimension={dimension} />
-    </div>
+    <SChatbox.ChatListWrapper ref={(el) => setObserved(el)}>
+      {!isEmpty(dimension) && !isEmpty(currentChatList) && (
+        <VirtualizedChatList data={currentChatList} dimension={dimension} />
+      )}
+    </SChatbox.ChatListWrapper>
   );
 };
 

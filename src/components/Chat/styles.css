@@ -1,6 +1,6 @@
 :root {
   --left-width: 200px;
-  --bar-color: #f0f0f0; 
+  --bar-color: #f0f0f0;
   padding: 0;
   margin: 0;
 }
@@ -20,17 +20,18 @@
 #dragbar {
   top: 0;
   height: 100%;
-  position: absolute;  
+  position: absolute;
+  z-index: 10;
 }
 
 #sidebar {
   width: var(--left-width);
   border-right: 2px solid var(--bar-color);
+  overflow-x: hidden;
 }
 
 #main {
   right: 0;
-  /* overflow: scroll; */
   width: calc(100% - var(--left-width));
 }
 
@@ -55,7 +56,6 @@
   cursor: col-resize;
   border-radius: 4px;
 }
-
 
 .chat-item {
   border-bottom: 1px solid lightgray;
@@ -95,5 +95,3 @@
 .bold {
   font-weight: bolder;
 }
-
-

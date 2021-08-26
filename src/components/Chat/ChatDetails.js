@@ -7,12 +7,10 @@ import SChatbox from "./StyledComp";
 
 const ChatboxDetails = ({ data, handleSend }) => {
   return (
-    <SChatbox.Wrapper>
-      <ChatboxMain
-        messages={data}
-        ChatboxInput={<ChatboxInput sendData={handleSend} />}
-      />
-    </SChatbox.Wrapper>
+    <ChatboxMain
+      messages={data}
+      ChatboxInput={<ChatboxInput sendData={handleSend} />}
+    />
   );
 };
 

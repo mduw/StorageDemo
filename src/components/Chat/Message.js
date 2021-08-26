@@ -2,7 +2,7 @@ import React, { Fragment, memo } from "react";
 import useUserStore from "../../stores/UserStore";
 import VirtualizedList from "./List";
 
-export const Message = ({ message }) => {
+export const Message = memo(({ message }) => {
   const { createAt, from, message: content } = message;
   const currentUser = useUserStore((state) => state.currentUser);
   return (
@@ -17,7 +17,7 @@ export const Message = ({ message }) => {
       </div>
     </Fragment>
   );
-};
+});
 
 const Messages = ({ messages, dimension }) => {
   return (

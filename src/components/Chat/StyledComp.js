@@ -61,4 +61,16 @@ SChatbox.VirtualizedChatList = styled(List)`
   outline: none;
 `;
 
+SChatbox.ChatListWrapper = styled.div`
+  width: 300px;
+  height: 100%;
+  overflow: scroll;
+`;
+
+SChatbox.ChatListDetailsWrapper = styled.div`
+  padding-bottom: 15px;
+  height: 50px; 
+  width: 100%;
+`;
+
 export default SChatbox;

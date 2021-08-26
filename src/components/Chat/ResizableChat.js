@@ -6,8 +6,8 @@ const CHATBOX_DIM = {
   SIDEBAR: {
     MINWIDTH: 200,
     MAXWIDTH: 300,
-  }
-}
+  },
+};
 
 export default function ResizableChatWindow({ ChatList, ChatDetails }) {
   const [dragging, setDragging] = useState(false);
@@ -21,11 +21,17 @@ export default function ResizableChatWindow({ ChatList, ChatDetails }) {
   useEffect(() => {
     let myEl = document.getElementById("chatboxWrapper");
     function resize(e) {
-      if (e.pageX > CHATBOX_DIM.SIDEBAR.MAXWIDTH || e.pageX < CHATBOX_DIM.SIDEBAR.MINWIDTH) {  
+      if (
+        e.pageX > CHATBOX_DIM.SIDEBAR.MAXWIDTH ||
+        e.pageX < CHATBOX_DIM.SIDEBAR.MINWIDTH
+      ) {
         return;
       }
-      if (window.innerWidth <=CHATBOX_DIM.RESIZABLE_MINWIDTH) {
-        myEl.style.setProperty("--left-width", CHATBOX_DIM.SIDEBAR.MINWIDTH + "px");
+      if (window.innerWidth <= CHATBOX_DIM.RESIZABLE_MINWIDTH) {
+        myEl.style.setProperty(
+          "--left-width",
+          CHATBOX_DIM.SIDEBAR.MINWIDTH + "px"
+        );
         return;
       }
       myEl.style.setProperty("--left-width", e.pageX + "px");
@@ -35,7 +41,7 @@ export default function ResizableChatWindow({ ChatList, ChatDetails }) {
       myEl.removeEventListener("mousemove", resize);
     }
 
-    function windowSizeHandler (event) {
+    function windowSizeHandler(event) {
       setWindowWidth(window.innerWidth);
     }
 
@@ -43,31 +49,32 @@ export default function ResizableChatWindow({ ChatList, ChatDetails }) {
       myEl.addEventListener("mousemove", resize);
       myEl.addEventListener("mouseup", clearJSEvents);
     }
-    
-    window.addEventListener('resize', windowSizeHandler);
+
+    window.addEventListener("resize", windowSizeHandler);
 
     return () => {
       myEl.removeEventListener("mouseup", clearJSEvents);
       myEl.removeEventListener("mousemove", resize);
-      window.removeEventListener('resize', windowSizeHandler);
+      window.removeEventListener("resize", windowSizeHandler);
     };
-    
   }, [dragging]);
 
-  useEffect(()=>{
+  useEffect(() => {
     let myEl = document.getElementById("chatboxWrapper");
-    if (windowWidth <=CHATBOX_DIM.RESIZABLE_MINWIDTH) {
-      myEl.style.setProperty("--left-width", CHATBOX_DIM.SIDEBAR.MINWIDTH + "px");
+    if (windowWidth <= CHATBOX_DIM.RESIZABLE_MINWIDTH) {
+      myEl.style.setProperty(
+        "--left-width",
+        CHATBOX_DIM.SIDEBAR.MINWIDTH + "px"
+      );
     }
-
-  },[windowWidth]);
+  }, [windowWidth]);
 
   return (
     <div id="chatboxWrapper">
-      <section id="sidebar">
-        <div id="dragbar" onMouseDown={handleMouseDown} />
+      <div id="sidebar">
         {ChatList}
-      </section>
+        <div id="dragbar" onMouseDown={handleMouseDown} />
+      </div>
       <div id="main">{ChatDetails}</div>
     </div>
   );
