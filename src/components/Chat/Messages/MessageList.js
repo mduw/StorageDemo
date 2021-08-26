@@ -8,7 +8,7 @@ const VirtualizedMessageList = ({ data, dimension }) => {
   const cellMeasurerCache = new CellMeasurerCache({
     fixedWidth: true,
   });
-  const rowRenderer = ({ key, index, style, parent }) => {
+  const rowRenderer = ({ key, index, style, parent, isScrolling }) => {
     return (
       <CellMeasurer
         cache={cellMeasurerCache}
@@ -17,8 +17,8 @@ const VirtualizedMessageList = ({ data, dimension }) => {
         parent={parent}
       >
         <div style={style}>
-          <div style={{ padding: "0.8em 0" }}>
-            <Message message={data[index]} />
+          <div style={{ padding: "1em 0" }}>
+            {!isScrolling && <Message message={data[index]} />}
           </div>
         </div>
       </CellMeasurer>
@@ -32,6 +32,7 @@ const VirtualizedMessageList = ({ data, dimension }) => {
       rowHeight={cellMeasurerCache.rowHeight}
       rowRenderer={rowRenderer}
       deferredMeasurementCache={cellMeasurerCache}
+      overscanRowCount={5}
     />
   );
 };

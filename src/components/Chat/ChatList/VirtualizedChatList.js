@@ -110,6 +110,7 @@ const VirtualizedChatList = ({ data, dimension }) => {
       rowHeight={cellMeasurerCache.rowHeight}
       rowRenderer={rowRenderer}
       deferredMeasurementCache={cellMeasurerCache}
+      overscanRowCount={5}
     />
   );
 };
