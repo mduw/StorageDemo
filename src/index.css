@@ -92,27 +92,36 @@ button[disabled] {
   float: right;
 }
 
-/* .chatbox-inp {
-  float: left;
-  width: 96%;
-  height: 2em;
-  font-size: 1em;
-  min-width: 400px;
-  clear: both;
-} */
+.msg-container-sender {
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.msg-sender {
+  background-color: var(--secondary-color);
+  border-radius: 8px;
+  display: flex;
+  padding: 12px;
+  width: auto;
+  white-space: pre-line;
+}
+
+.msg-container-receiver {
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: flex-start;
+  width: 100%;
+}
 
 .msg-receiver {
-  display: block;
-  margin-top: 5px;
-  padding: 8px;
-  background-color: white;
-  float: left;
-}
-.msg-sender {
-  display: block;
-  margin-top: 5px;
-  float: right;
-  background-color: var(--secondary-color);
+  background-color: #ffffff;
+  border-radius: 8px;
+  display: flex;
+  padding: 12px;
+  width: auto;
+  white-space: pre-line;
 }
 
 .msg-time {
@@ -184,9 +193,6 @@ button[disabled] {
   border-radius: 10px;
   padding: 10px;
   margin: 4px !important;
-}
-.selected {
-  background: lightgray;
 }
 
 .slide {
@@ -262,7 +268,9 @@ button[disabled] {
   padding: 10px;
   clear: both;
   border-radius: 16px;
-  height: auto;
+  max-height: 90px;
+  overflow: scroll;
+  text-overflow: ellipsis;
 }
 
 .user-info {
@@ -311,41 +319,6 @@ button[disabled] {
   visibility: visible;
 }
 
-.chat-item {
-  border-bottom: 1px solid lightgray;
-  padding: 8px;
-  border: 0;
-  margin: 0;
-}
-
-.chat-item:hover {
-  cursor: pointer;
-  background: lightgray;
-}
-.bg {
-  background: lightgray;
-}
-.chat-item .title {
-  display: block;
-  width: auto;
-  font-weight: bold;
-  margin: 0;
-  text-align: left;
-  padding-right: 8px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.chat-item .msg-preview {
-  display: block;
-  width: auto;
-  padding-right: 8px;
-  margin: 4px auto 8px auto;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.bold {
-  font-weight: bolder;
+.selected {
+  background: var(--gray);
 }

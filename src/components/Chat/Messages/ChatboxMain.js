@@ -4,6 +4,7 @@ import ChatboxTitle from "../ChatboxHeader/ChatTitle";
 import AddFriendsBtn from "../ChatboxHeader/AddFriendsBtn";
 import Messages from "./Message";
 import useMessageStore from "../../../stores/MessageStore";
+import OptimizedMsgList from "./OptimizedMsgList";
 
 const ChatboxMain = ({ messages, ChatboxInput }) => {
   const currentChat = useMessageStore((state) => state.currentChat);
@@ -44,7 +45,8 @@ const ChatboxMain = ({ messages, ChatboxInput }) => {
 
         <div className="chatbox-message" ref={(el) => setObserved(el)}>
           <AddUserSection show={addingUser} close={quitCreatingGroupChat} />
-          <Messages messages={messages} dimension={dimension} />
+          {/* <Messages messages={messages} dimension={dimension} /> */}
+          <OptimizedMsgList messages={messages}/>
         </div>
       </div>
       {ChatboxInput}
