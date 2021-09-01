@@ -14,6 +14,9 @@ DefaultS.Btn = styled.button`
   box-shadow: none;
   border: none;
   opacity: ${(props) => (props.disabled ? 0.5 : 1)};
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 DefaultS.InputField = styled.input`
