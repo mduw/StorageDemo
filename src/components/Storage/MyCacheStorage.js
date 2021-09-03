@@ -1,49 +1,52 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { getStr } from "../../lib/HelperFuncs";
 import SStorage from "./StyledComp";
 
 const CACHE_NAME = "demo-cache";
 let cacheObj;
-caches.open(CACHE_NAME).then((cache) => {
-  cacheObj = cache;
-});
-function addToCaches() {
-  const fname = `/cache_${Date.now().toString()}.txt`;
+
+export function addToCaches() {
+  const path = `/cache_${Date.now().toString()}`;
   const stringResponse = new Response(getStr());
   return cacheObj
-    .put(fname, stringResponse)
+    .put(path, stringResponse)
     .then(() => {
-      console.log(`Added to Cache Storage: '${fname}'`);
+      console.log(`CACHE STORAGE: SUCCESSFULLY ADDED "${path}"`);
     })
     .catch((err) => {
-      console.error(`*** Cache API: '${err.name}' ***`, err);
-      if (fillDiskCachesInterval) {
-        toggleFillCaches();
-      }
-      alert("Oops: Error writing to Cache API, check console.");
+      alert("CACHE STORAGE: ERROR! FAILED TO WRITE CACHE");
     });
 }
 
-async function emptyCache() {
+export async function emptyCache() {
   const cache = await caches.open(CACHE_NAME);
   const keys = await cache.keys();
   keys.forEach((key) => {
     cache.delete(key);
   });
-  caches.delete(CACHE_NAME).then(function(boolean) {
-    console.log(CACHE_NAME, "IS DELETED");
-  }).catch(error => console.log("EROR: CANNOT DELETE", CACHE_NAME, error));
+  caches
+    .delete(CACHE_NAME)
+    .then(() => {
+      console.log("CACHE STORAGE:", CACHE_NAME, "IS DELETED");
+    })
+    .catch((error) => console.log("CACHE STORAGE: FAILED TO DELETE", CACHE_NAME, error));
 }
 
 export const MyCacheStorage = () => {
   const handleAddCache = () => addToCaches();
   const handleEmptyCache = () => emptyCache();
-  
+
+  useEffect(() => {
+    caches.open(CACHE_NAME).then((cache) => {
+      cacheObj = cache;
+    });
+  }, []);
+
   return (
     <SStorage.Section>
-      <span>Cache Storage</span>
-      <SStorage.Btn onClick={handleAddCache}>Add</SStorage.Btn>
+      <SStorage.InfoWrapper>Cache Storage</SStorage.InfoWrapper>
       <SStorage.Btn onClick={handleEmptyCache}>Empty</SStorage.Btn>
+      <SStorage.Btn onClick={handleAddCache}>Add</SStorage.Btn>
     </SStorage.Section>
   );
 };

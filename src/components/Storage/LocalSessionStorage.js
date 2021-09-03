@@ -20,20 +20,30 @@ export function emptyStorage(storageType) {
 export const Storage = ({ storageType, name }) => {
   const [size, setSize] = useState(storageType.length);
   const handleAdd2Storage = () => {
-    addData2Storage(storageType); // syc
-    setSize(storageType.length); 
+    addData2Storage(storageType);
+    setSize(storageType.length);
   };
   const handleEmptyStorage = () => {
     emptyStorage(storageType); // sync
     setSize(storageType.length);
   };
+
+  useEffect(() => {
+    const handleStorageChange = () => setSize(0);
+    const clearAllBtn = document.getElementById("clearAll-Btn");
+    clearAllBtn.addEventListener("click", handleStorageChange);
+    return () => {
+      clearAllBtn.removeEventListener("click", handleStorageChange);
+    };
+  }, []);
+
   return (
     <SStorage.Section>
-      <span>
+      <SStorage.InfoWrapper>
         {name} = <SStorage.Value>{size}MB</SStorage.Value>
-      </span>
-      <SStorage.Btn onClick={handleAdd2Storage}>Add</SStorage.Btn>
+      </SStorage.InfoWrapper>
       <SStorage.Btn onClick={handleEmptyStorage}>Empty</SStorage.Btn>
+      <SStorage.Btn onClick={handleAdd2Storage}>Add</SStorage.Btn>
     </SStorage.Section>
   );
 };
