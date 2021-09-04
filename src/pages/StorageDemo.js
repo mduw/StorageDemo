@@ -23,22 +23,24 @@ const StorageDemo = () => {
     emptyIndexedDB();
     setRefetch(!refetch);
   };
-
   return (
     <SStorage.Wrapper>
       <h2 className="center">Offline Storage Demo</h2>
+
       <QuotaStat refetch={refetch} setRefetch={setRefetch} />
       <LocalStorage refetch={refetch} />
       <SessionStorage refetch={refetch} />
       <MyCacheStorage />
       <Database />
-      <SStorage.SectionOuter><SStorage.ClearAllBtn
-        id="clearAll-Btn"
-        onClick={handleClearAll}
-        width="100%"
-      >
-        CLEAR ALL
-      </SStorage.ClearAllBtn></SStorage.SectionOuter>
+      <SStorage.SectionOuter>
+        <SStorage.ClearAllBtn
+          id="clearAll-Btn"
+          onClick={handleClearAll}
+          width="100%"
+        >
+          CLEAR ALL
+        </SStorage.ClearAllBtn>
+      </SStorage.SectionOuter>
     </SStorage.Wrapper>
   );
 };

@@ -15,7 +15,8 @@ function connect2DB(postTask = null) {
       alert("IndexedDB: FAILED TO LOAD DB");
     };
     db.createObjectStore(STORE_NAME);
-    event.target.oncomplete = () => {
+    event.target.oncomplete = () => { 
+      // transactions completed before adding more
       if (postTask) postTask();
     };
   };

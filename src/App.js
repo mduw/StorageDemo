@@ -9,8 +9,8 @@ const App = () => {
   return (
     <div className="App">
       <BrowserRouter>
-          <Header />
-          <Routes />
+        <Header />
+        <Routes />
       </BrowserRouter>
     </div>
   );
