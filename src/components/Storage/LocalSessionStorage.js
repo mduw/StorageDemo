@@ -4,12 +4,13 @@ import SStorage from "./StyledComp";
 
 const { localStorage, sessionStorage } = window;
 
-export function addData2Storage(storageType) {
+export function addData2Storage(storageType, postTask = null) {
   const key = `key_${Date.now().toString()}`;
   try {
     storageType.setItem(key, getStr());
+    if (postTask) postTask();
   } catch (error) {
-    alert(`*** LocalStorage: '${error.name}'`);
+    console.log(`LocalStorage: '${error.name}'`);
   }
 }
 
@@ -20,8 +21,9 @@ export function emptyStorage(storageType) {
 export const Storage = ({ storageType, name }) => {
   const [size, setSize] = useState(storageType.length);
   const handleAdd2Storage = () => {
-    addData2Storage(storageType);
-    setSize(storageType.length);
+    addData2Storage(storageType, () => {
+      setSize(storageType.length);
+    });
   };
   const handleEmptyStorage = () => {
     emptyStorage(storageType); // sync

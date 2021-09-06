@@ -39,24 +39,36 @@ export const ByteToMB = (val) => {
   try {
     result = new Intl.NumberFormat("en-us", opts).format(val / ONE_MB);
   } catch (ex) {
-    result = Math.round(val / (ONE_MB));
+    result = Math.round(val / ONE_MB);
   }
   return `${result} MB`;
 };
 
-const textDecoder = new TextDecoder("utf-8");
+// const textDecoder = new TextDecoder("utf-8");
 
-const getArrayBuffer = (size) => {
-  const buffer = new ArrayBuffer(size);
-  const view = new Uint8Array(buffer);
-  const len = view.length;
-  for (let i = 0; i < len; i++) {
-    view[i] = Math.random() * (126 - 33) + 33;
-  }
-  return buffer;
-};
+// const getArrayBuffer = (size) => {
+//   const buffer = new ArrayBuffer(size);
+//   const view = new Uint8Array(buffer);
+//   const len = view.length;
+//   for (let i = 0; i < len; i++) {
+//     view[i] = Math.random() * (126 - 33) + 33;
+//   }
+//   return buffer;
+// };
+
+// export function getStr(size = ONE_MB) {
+//   const buffer = getArrayBuffer(size);
+//   return textDecoder.decode(buffer);
+// }
 
 export function getStr(size = ONE_MB) {
-  const buffer = getArrayBuffer(size);
-  return textDecoder.decode(buffer);
+  const chars = "abcdefghijklmnopqrstuvwxyz".split("");
+  const len = chars.length;
+  let random_data = [];
+
+  while (size--) {
+    random_data.push(chars[(Math.random() * len) | 0]);
+  }
+
+  return random_data.join("");
 }

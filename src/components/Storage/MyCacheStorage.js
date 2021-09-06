@@ -3,20 +3,22 @@ import { getStr } from "../../lib/HelperFuncs";
 import SStorage from "./StyledComp";
 
 const CACHE_NAME = "demo-cache";
-let cacheObj;
+//let cacheObj;
 
-export function addToCaches() {
+export const addToCaches = async () => {
   const path = `/cache_${Date.now().toString()}`;
-  const stringResponse = new Response(getStr());
+  const content = new Response(getStr());
+
+  const cacheObj = await caches.open(CACHE_NAME);
   return cacheObj
-    .put(path, stringResponse)
+    .put(path, content)
     .then(() => {
       console.log(`CACHE STORAGE: SUCCESSFULLY ADDED "${path}"`);
     })
     .catch((err) => {
       alert("CACHE STORAGE: ERROR! FAILED TO WRITE CACHE");
     });
-}
+};
 
 export async function emptyCache() {
   const cache = await caches.open(CACHE_NAME);
@@ -29,18 +31,17 @@ export async function emptyCache() {
     .then(() => {
       console.log("CACHE STORAGE:", CACHE_NAME, "IS DELETED");
     })
-    .catch((error) => console.log("CACHE STORAGE: FAILED TO DELETE", CACHE_NAME, error));
+    .then(() => {
+      window.location.reload(true);
+    })
+    .catch((error) =>
+      console.error("CACHE STORAGE: FAILED TO DELETE", CACHE_NAME, error)
+    );
 }
 
 export const MyCacheStorage = () => {
   const handleAddCache = () => addToCaches();
   const handleEmptyCache = () => emptyCache();
-
-  useEffect(() => {
-    caches.open(CACHE_NAME).then((cache) => {
-      cacheObj = cache;
-    });
-  }, []);
 
   return (
     <SStorage.Section>

@@ -15,10 +15,11 @@ const Header = () => {
     setCurrentChat("");
     history.push("/");
   };
-  
   return (
     <Fragment>
-      <SDefault.Link to="/">Home</SDefault.Link>
+      {window.location.pathname !== "/chatbox" && (
+        <SDefault.Link to="/">Home</SDefault.Link>
+      )}
       {!isEmpty(currentUser) && (
         <div className="user-info">
           Welcome, <b>{currentUser.username}</b> |{" "}

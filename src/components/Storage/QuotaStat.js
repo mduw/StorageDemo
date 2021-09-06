@@ -33,6 +33,7 @@ const QuotaStat = ({ refetch, setRefetch }) => {
     let checkInterval = setInterval(() => {
       fetchQuota(updateQuota);
     }, 1000);
+    
     return () => {
       clearInterval(checkInterval);
     };
