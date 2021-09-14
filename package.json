@@ -1,7 +1,13 @@
 {
-  "name": "chatapp",
+  "name": "storagememo",
   "version": "0.1.0",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:mduw/StorageDemo.git"
+  },
+  "homepage": "https://mduw.github.io/StorageDemo",
+
   "dependencies": {
     "axios": "^0.18.0",
     "concurrently": "^3.6.1",
