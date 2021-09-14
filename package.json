@@ -7,7 +7,6 @@
     "url": "git@github.com:mduw/StorageDemo.git"
   },
   "homepage": "https://mduw.github.io/StorageDemo",
-
   "dependencies": {
     "axios": "^0.18.0",
     "concurrently": "^3.6.1",
@@ -49,7 +48,8 @@
     ]
   },
   "devDependencies": {
-    "eslint-plugin-react-hooks": "^4.2.0"
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "gh-pages": "^3.2.3"
   },
   "config": {
     "forge": {
