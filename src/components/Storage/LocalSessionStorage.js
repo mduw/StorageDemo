@@ -71,7 +71,7 @@ export const Storage = ({ storageType, name }) => {
       </SStorage.InfoWrapper>
       <SStorage.Btn.Clear onClick={handleEmptyStorage}>Empty</SStorage.Btn.Clear>
       <SStorage.Btn onClick={handleAdd2Storage}>Add</SStorage.Btn>
-      <InputField postTask={handleNewInpSize} />
+      <InputField type="number" postTask={handleNewInpSize} />
     </SStorage.Section>
   );
 };
