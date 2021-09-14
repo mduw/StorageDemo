@@ -56,7 +56,7 @@ export const MyCacheStorage = () => {
       </SStorage.InfoWrapper>
       <SStorage.Btn.Clear onClick={handleEmptyCache}>Empty</SStorage.Btn.Clear>
       <SStorage.Btn onClick={handleAddCache}>Add</SStorage.Btn>
-      <InputField postTask={handleNewInpSize} />
+      <InputField type="number" postTask={handleNewInpSize} />
     </SStorage.Section>
   );
 };
