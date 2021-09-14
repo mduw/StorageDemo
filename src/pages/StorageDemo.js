@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import SDefault from "../components/DefaultStyledComp";
 import {
   emptyStorage,
   LocalStorage,
   QuotaStat,
   SessionStorage,
-} from "../components/Storage";
-import { Database, emptyIndexedDB } from "../components/Storage/IndexedDB";
-import {
   emptyCache,
   MyCacheStorage,
-} from "../components/Storage/MyCacheStorage";
+  Database,
+  emptyIndexedDB,
+} from "../components/Storage";
+
 import SStorage from "../components/Storage/StyledComp";
 
 const StorageDemo = () => {
@@ -33,13 +31,13 @@ const StorageDemo = () => {
       <MyCacheStorage />
       <Database />
       <SStorage.SectionOuter>
-        <SStorage.ClearAllBtn
+        <SStorage.Btn.ClearAll
           id="clearAll-Btn"
           onClick={handleClearAll}
           width="100%"
         >
           CLEAR ALL
-        </SStorage.ClearAllBtn>
+        </SStorage.Btn.ClearAll>
       </SStorage.SectionOuter>
     </SStorage.Wrapper>
   );

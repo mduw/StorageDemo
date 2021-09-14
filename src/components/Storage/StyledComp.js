@@ -10,9 +10,12 @@ SStorage.Wrapper = styled.div`
 
 SStorage.Btn = styled(SDefault.Btn)`
   float: right;
+  width: 100px;
   margin: 20px 0 20px 20px;
   text-align: center;
   outline: none;
+  opacity: 0.9;
+  &:hover { opacity: 1; }
 `;
 
 SStorage.InfoWrapper = styled.span`
@@ -27,8 +30,8 @@ SStorage.Value = styled.span`
 
 SStorage.Section = styled.section`
   display: block;
-  border-top: 1px solid lightgray;
-  margin: 20px auto;
+  border-top: 0px solid lightgray;
+  margin: 26px auto;
   height: 60px;
   width: 50%;
   padding: 0 10px;
@@ -41,11 +44,23 @@ SStorage.SectionOuter = styled(SStorage.Section)`
   border: none;
   margin-top: 10vh;
 `;
-
-SStorage.ClearAllBtn = styled(SDefault.Btn)`
+SStorage.Btn.Clear = styled(SStorage.Btn)`
+  background: #D44500;
+  width: 100px;
+`;
+SStorage.Btn.ClearAll = styled(SStorage.Btn)`
   margin: -30px auto;
-  width: 200px;
+  width: 220px;
   float: right;
+  background: #D44500;
+`;
+
+SStorage.InputField = styled(SDefault.InputField)`
+  float: right;
+  margin: 20px 0 0 20px;
+  text-align: center;
+  padding: 8px;
+  width: 35px;
 `;
 
 export default SStorage;

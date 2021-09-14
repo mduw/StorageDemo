@@ -1,92 +1,144 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { getStr } from "../../lib/HelperFuncs";
+import { getStr, ONE_MB } from "../../lib/HelperFuncs";
+import { InputField } from "./InputField";
 import SStorage from "./StyledComp";
 
-const DB_NAME = "demo_db";
-const STORE_NAME = "messages";
-let db;
+export const DB_NAME = "demo_db";
+export const STORES = {
+  users: "users",
+  messages: "messages",
+};
 
-function connect2DB(postTask = null) {
-  const request = window.indexedDB.open(DB_NAME);
-  request.onupgradeneeded = function (event) {
-    db = request.result;
-    db.onerror = function (errorEvent) {
-      alert("IndexedDB: FAILED TO LOAD DB");
-    };
-    db.createObjectStore(STORE_NAME);
-    event.target.oncomplete = () => { 
-      // transactions completed before adding more
-      if (postTask) postTask();
-    };
-  };
+export function print(msg) { console.log(msg); }
 
-  request.onsuccess = function (event) {
-    db = request.result;
-    console.log("IndexedDB: CONNECTED");
-    if (postTask) postTask();
-  };
-  closeDBConnection();
+export function connect2DB(postTask = null) {
+	const request = indexedDB.open(DB_NAME);
+	request.onerror = (error) => { print("IndexedDB ERR: FAILED TO CONNECT", error); }
+	request.onsuccess = function(){
+    print("IndexedDB: CONNECTED TO DB");
+    if (postTask) postTask(request.result);
+	}
+	request.onupgradeneeded = function(e){
+		const DBInstance = e.currentTarget.result;
+		for (let store in STORES) {
+      if (DBInstance.objectStoreNames.contains(store)) DBInstance.deleteObjectStore(store);
+      DBInstance.createObjectStore(store); 
+    }
+
+		connect2DB(postTask);
+	}
 }
 
-function closeDBConnection() {
-  if (db) db.close();
-  console.log("IndexedDB: CONNECTION CLOSED");
+export function closeDBConnection(DBInstance) {
+  if (DBInstance) {
+    DBInstance.close();
+    print("IndexedDB: CONNECTION CLOSED");
+  } else print("IndexedDB: DB NOT FOUND");
 }
 
-function addData2IDB() {
-  const data = getStr();
+export function addData2IDB_Safe(itemSize, postTask = null) {
+  const storeName = STORES.messages;
+  const data = getStr(itemSize * ONE_MB);
   const key = `msg_${Date.now().toString()}`;
-  const tx = db.transaction([STORE_NAME], "readwrite");
-  const objectStore = tx.objectStore(STORE_NAME);
-  const objectStoreRequest = objectStore.add(data, key);
-  objectStoreRequest.onsuccess = () => {
-    console.log("Successfully added to IndexedDB", data);
-  };
-  objectStoreRequest.onerror = () => {
-    console.log("error");
-  };
+  try {
+    connect2DB((DBInstance) => {
+      const transaction = DBInstance.transaction([storeName], "readwrite");
+      const objectStore = transaction.objectStore(storeName);
+      const objectStoreRequest = objectStore.add(data, key);
+      objectStoreRequest.onerror = () => { print("IndexedDB ERR: FAILED TO ADD DATA"); };
+      objectStoreRequest.onsuccess = function(){
+        print("IndexedDB: DATA ROW ADDED");
+        closeDBConnection(DBInstance);
+        if (postTask) postTask();
+      }
+    });
+
+  } catch (error) {
+    print("IndexedDB ERR:", error);
+  }
 }
 
-function addData2IDB_Safe() {
-  connect2DB(addData2IDB);
+export function deleteItemByKey_Safe(key, storeName = STORES.messages, postTask=null) {
+  try {
+    connect2DB((DBInstance) => {
+      const transaction = DBInstance.transaction([storeName], "readwrite");
+      const objectStore = transaction.objectStore(storeName);
+      const objectStoreRequest = objectStore.delete(key);
+      objectStoreRequest.onerror = () => { print("IndexedDB ERR: FAILED TO DELETE", key); };
+      objectStoreRequest.onsuccess = function(){
+        print("IndexedDB: DATA ROW DELETED", key);
+        closeDBConnection(DBInstance);
+        if (postTask) postTask();
+      }
+    });
+
+  } catch (error) {
+    console.log("IndexedDB ERR:", error);
+  }
 }
 
-export const emptyIndexedDB = () => {
-  closeDBConnection();
-  const delRequest = indexedDB.deleteDatabase(DB_NAME);
-  delRequest.onsuccess = function () {
+export const emptyIndexedDB = (cleanupTask = null) => {
+  const delRequest = window.indexedDB.deleteDatabase(DB_NAME);
+  delRequest.oncomplete = function () {
     console.log("IndexedDB: ", DB_NAME, "IS DELETED");
+    if (cleanupTask) cleanupTask();
   };
   delRequest.onerror = function () {
     console.log("IndexedDB: FAILED TO DELETE", DB_NAME);
   };
   delRequest.onblocked = function () {
-    console.log("IndexedDB: Operation being blocked. Failed to delete DB");
+    console.log("IndexedDB: OPERATION BEING BLOCKED");
   };
 };
 
-export const Database = () => {
+const Database = () => {
   const [loading, setLoading] = useState(true);
-  const handleAddDB = () => addData2IDB_Safe();
-  const handleEmptyDB = () => emptyIndexedDB();
+  const [inpSize, setInpSize] = useState(1);
+  const [totalSize, setTotalSize] = useState(0);
+  const [key2Del, setKey2Del] = useState();
+
+  const handleAddDB = () =>
+    addData2IDB_Safe(inpSize, () => setTotalSize(totalSize + inpSize));
+  const handleEmptyDB = () => emptyIndexedDB(() => setTotalSize(0));
+  const handleDelByKey = () => deleteItemByKey_Safe(key2Del, STORES.messages);
+
+  const handleNewInpSize = (kMB) => setInpSize(kMB);
+  const onItemKeyChange = (key) => setKey2Del(key);
 
   useEffect(() => {
-    connect2DB(() => setLoading(false));
-    return () => {
-      closeDBConnection();
-    };
+    connect2DB((DBInstance) => {
+      closeDBConnection(DBInstance);
+      setLoading(false);
+    });  
   }, []);
 
   return (
-    <SStorage.Section>
-      <SStorage.InfoWrapper>IndexedDB</SStorage.InfoWrapper>
-      <SStorage.Btn disabled={loading} onClick={handleEmptyDB}>
-        Empty
-      </SStorage.Btn>
-      <SStorage.Btn disabled={loading} onClick={handleAddDB}>
-        Add
-      </SStorage.Btn>
-    </SStorage.Section>
+    <>
+      <SStorage.Section>
+        <SStorage.InfoWrapper>
+          IndexedDB = <SStorage.Value>{totalSize}MB</SStorage.Value>
+        </SStorage.InfoWrapper>
+        <SStorage.Btn.Clear disabled={loading} onClick={handleEmptyDB}>
+          Reset
+        </SStorage.Btn.Clear>
+        <SStorage.Btn disabled={loading} onClick={handleAddDB}>
+          Add
+        </SStorage.Btn>
+        <InputField type="number" postTask={handleNewInpSize} />
+      </SStorage.Section>
+      <SStorage.Section>
+        <SStorage.Btn.Clear disabled={loading} onClick={handleDelByKey}>
+          Delete
+        </SStorage.Btn.Clear>
+        <InputField
+          defaultVal=""
+          placeholder="Object key"
+          width="80px"
+          postTask={onItemKeyChange}
+        />
+      </SStorage.Section>
+    </>
   );
 };
+
+export { Database };

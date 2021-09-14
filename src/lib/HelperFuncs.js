@@ -1,4 +1,5 @@
-import useUserStore from "../stores/UserStore";
+
+export const ONE_MB = 1024 * 1024;
 
 let guid = () => {
   let s4 = () => {
@@ -29,8 +30,6 @@ export const generateUID = () => {
 export const isEmpty = (obj) =>
   obj === null || obj === undefined || Object.keys(obj).length === 0;
 
-const ONE_MB = 1024 * 1024;
-
 export const ByteToMB = (val) => {
   const opts = {
     maximumFractionDigits: 0,
@@ -44,26 +43,9 @@ export const ByteToMB = (val) => {
   return `${result} MB`;
 };
 
-// const textDecoder = new TextDecoder("utf-8");
-
-// const getArrayBuffer = (size) => {
-//   const buffer = new ArrayBuffer(size);
-//   const view = new Uint8Array(buffer);
-//   const len = view.length;
-//   for (let i = 0; i < len; i++) {
-//     view[i] = Math.random() * (126 - 33) + 33;
-//   }
-//   return buffer;
-// };
-
-// export function getStr(size = ONE_MB) {
-//   const buffer = getArrayBuffer(size);
-//   return textDecoder.decode(buffer);
-// }
-
 export function getStr(size = ONE_MB) {
-  const chars = "abcdefghijklmnopqrstuvwxyz".split("");
-  const len = chars.length;
+  let chars = "abcdefghijklmnopqrstuvwxyz".split("");
+  let len = chars.length;
   let random_data = [];
 
   while (size--) {
