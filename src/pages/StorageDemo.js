@@ -21,6 +21,20 @@ const StorageDemo = () => {
     emptyIndexedDB();
     setRefetch(!refetch);
   };
+  const onRequestPersistStorage = async () => {
+    // Request persistent storage for site
+    if (navigator.storage && navigator.storage.persist)
+      navigator.storage.persist().then(function (persistent) {
+        if (persistent)
+          console.log(
+            "Storage will not be cleared except by explicit user action"
+          );
+        else
+          console.log(
+            "Storage may be cleared by the UA under storage pressure."
+          );
+      });
+  };
   return (
     <SStorage.Wrapper>
       <h2 className="center">Offline Storage Demo</h2>
@@ -39,6 +53,14 @@ const StorageDemo = () => {
           CLEAR ALL
         </SStorage.Btn.ClearAll>
       </SStorage.SectionOuter>
+      <SStorage.Section>
+        <SStorage.Btn
+          onClick={onRequestPersistStorage}
+          style={{ width: "200px" }}
+        >
+          Persist storage
+        </SStorage.Btn>
+      </SStorage.Section>
     </SStorage.Wrapper>
   );
 };

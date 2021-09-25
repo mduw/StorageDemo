@@ -103,7 +103,7 @@ const Database = () => {
   const handleDelByKey = () => deleteItemByKey_Safe(key2Del, STORES.messages);
 
   const handleNewInpSize = (kMB) => setInpSize(kMB);
-  const onItemKeyChange = (key) => setKey2Del(key);
+  const onItemKeyChange = (key) => setKey2Del(key); 
 
   useEffect(() => {
     connect2DB((DBInstance) => {
