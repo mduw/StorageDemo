@@ -5,7 +5,7 @@ import SStorage from "./StyledComp";
 
 const CACHE_NAME = "demo-cache";
 
-export const addToCaches = async (cacheSize, postTask) => {
+export const addToCaches = async (cacheSize, postTask = null) => {
   const path = `/cache_${Date.now().toString()}_${cacheSize}MB`;
   const content = new Response(getStr(cacheSize * ONE_MB));
 
@@ -14,7 +14,7 @@ export const addToCaches = async (cacheSize, postTask) => {
     .put(path, content)
     .then(() => {
       console.log(`CACHE STORAGE: SUCCESSFULLY ADDED "${path}"`);
-      postTask();
+      if (postTask) postTask();
     })
     .catch((err) => {
       alert("CACHE STORAGE: ERROR! FAILED TO WRITE CACHE");
@@ -43,11 +43,28 @@ export async function emptyCache() {
 export const MyCacheStorage = () => {
   const [totalSize, setTotalSize] = useState(0);
   const [inpSize, setInpSize] = useState(0);
+  const [auto, setAuto] = useState(false);
+
+  const handleAutoAddCache = () => setAuto(!auto);
 
   const handleAddCache = () =>
     addToCaches(inpSize, () => setTotalSize(totalSize + inpSize));
   const handleEmptyCache = () => emptyCache();
   const handleNewInpSize = (kMB) => setInpSize(kMB);
+
+  useEffect(() => {
+    let autoAddTimer;
+    if (auto) {
+      autoAddTimer = setInterval(() => {
+        addToCaches(inpSize, () => setTotalSize(totalSize + inpSize));
+      }, 1000);
+    } else {
+      clearInterval(autoAddTimer);
+    }
+    return () => {
+      clearInterval(autoAddTimer);
+    };
+  }, [auto, totalSize, inpSize]);
 
   return (
     <SStorage.Section>
@@ -55,8 +72,11 @@ export const MyCacheStorage = () => {
         Cache Storage = <SStorage.Value>{totalSize}MB</SStorage.Value>
       </SStorage.InfoWrapper>
       <SStorage.Btn.Clear onClick={handleEmptyCache}>Empty</SStorage.Btn.Clear>
+      <SStorage.Btn onClick={handleAutoAddCache} style={{ width: "120px" }}>
+        {auto ? "Auto OFF" : "Auto ON"}
+      </SStorage.Btn>
       <SStorage.Btn onClick={handleAddCache}>Add</SStorage.Btn>
-      <InputField type="number" postTask={handleNewInpSize} />
+      <InputField type="number" defaultVal="10" postTask={handleNewInpSize} />
     </SStorage.Section>
   );
 };

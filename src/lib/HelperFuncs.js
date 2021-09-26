@@ -1,5 +1,4 @@
-
-export const ONE_MB = 1024 * 1024;
+export const ONE_MB = 1000 * 1000;
 
 let guid = () => {
   let s4 = () => {
@@ -32,7 +31,7 @@ export const isEmpty = (obj) =>
 
 export const ByteToMB = (val) => {
   const opts = {
-    maximumFractionDigits: 0,
+    maximumFractionDigits: 1,
   };
   let result;
   try {

@@ -15,13 +15,19 @@ export function getStorageSize(storageType) {
   return (total / ONE_MB).toFixed(0); // MB
 }
 
-export function addData2Storage(storageType, size, postTask = null) {
+export function addData2Storage(
+  storageType,
+  size,
+  postTask = null,
+  postError = null
+) {
   const key = `key${storageType.length + 1}_${size}MB`;
   try {
     storageType.setItem(key, getStr(size * ONE_MB));
     if (postTask) postTask();
   } catch (error) {
-    console.log(`ERROR: '${error.name}'`);
+    alert(`ERROR: '${error.name}'`);
+    if (postError) postError();
   }
 }
 
@@ -31,7 +37,10 @@ export function emptyStorage(storageType) {
 
 export const Storage = ({ storageType, name }) => {
   const [totalSize, setTotalSize] = useState(storageType.length);
-  const [inpSize, setInpSize] = useState(0);
+  const [inpSize, setInpSize] = useState(2);
+  const [auto, setAuto] = useState(false);
+
+  const handleAutoAdd2Storage = () => setAuto(!auto);
   const handleAdd2Storage = () => {
     addData2Storage(storageType, inpSize, () => {
       console.log(`${name}: ADDED ${inpSize}MB`);
@@ -64,15 +73,50 @@ export const Storage = ({ storageType, name }) => {
     };
   }, []);
 
+  useEffect(() => {
+    let autoAddTimer;
+    if (auto) {
+      autoAddTimer = setInterval(() => {
+        addData2Storage(
+          storageType,
+          inpSize,
+          () => {
+            console.log(`${name}: ADDED ${inpSize}MB`);
+            setTotalSize(getStorageSize(storageType));
+          },
+          () => {
+            setAuto(!auto);
+          }
+        );
+      }, 1000);
+    } else {
+      clearInterval(autoAddTimer);
+    }
+    return () => {
+      clearInterval(autoAddTimer);
+    };
+  }, [auto, totalSize, inpSize]);
+
   return (
-    <SStorage.Section>
-      <SStorage.InfoWrapper>
-        {name} = <SStorage.Value>{totalSize}MB</SStorage.Value>
-      </SStorage.InfoWrapper>
-      <SStorage.Btn.Clear onClick={handleEmptyStorage}>Empty</SStorage.Btn.Clear>
-      <SStorage.Btn onClick={handleAdd2Storage}>Add</SStorage.Btn>
-      <InputField type="number" postTask={handleNewInpSize} />
-    </SStorage.Section>
+    <>
+      <SStorage.Section>
+        <SStorage.InfoWrapper>
+          {name} = <SStorage.Value>{totalSize}MB</SStorage.Value>
+        </SStorage.InfoWrapper>
+        <SStorage.Btn.Clear onClick={handleEmptyStorage}>
+          Empty
+        </SStorage.Btn.Clear>
+        <SStorage.Btn onClick={handleAutoAdd2Storage} style={{ width: "auto" }}>
+          {auto ? "Auto OFF" : "Auto ON"}
+        </SStorage.Btn>
+        <SStorage.Btn onClick={handleAdd2Storage}>Add</SStorage.Btn>
+        <InputField
+          type="number"
+          defaultVal={`${inpSize}`}
+          postTask={handleNewInpSize}
+        />
+      </SStorage.Section>
+    </>
   );
 };
 

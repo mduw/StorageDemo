@@ -5,13 +5,14 @@ const SStorage = {};
 
 SStorage.Wrapper = styled.div`
   padding: 24px;
-  min-width: 500px;
+  min-width: 680px;
+  font-size: 18px;
 `;
 
 SStorage.Btn = styled(SDefault.Btn)`
   float: right;
   width: 100px;
-  margin: 20px 0 20px 20px;
+  margin: 40px 0 35px 30px;
   text-align: center;
   outline: none;
   opacity: 0.9;
@@ -29,11 +30,12 @@ SStorage.Value = styled.span`
 `;
 
 SStorage.Section = styled.section`
+  position: relative;
   display: block;
-  border-top: 0px solid lightgray;
+  border-top: 1px solid lightgray;
   margin: 26px auto;
-  height: 60px;
-  width: 50%;
+  height: 100px;
+  width: 80%;
   padding: 0 10px;
   @media (max-width: 990px) {
     width: 100%;
@@ -43,6 +45,9 @@ SStorage.Section = styled.section`
 SStorage.SectionOuter = styled(SStorage.Section)`
   border: none;
   margin-top: 10vh;
+`;
+SStorage.PlainSectionOuter = styled(SStorage.Section)`
+  border: none;
 `;
 SStorage.Btn.Clear = styled(SStorage.Btn)`
   background: #D44500;
@@ -57,10 +62,12 @@ SStorage.Btn.ClearAll = styled(SStorage.Btn)`
 
 SStorage.InputField = styled(SDefault.InputField)`
   float: right;
-  margin: 20px 0 0 20px;
+  margin: 40px 0 0 20px;
   text-align: center;
   padding: 8px;
-  width: 35px;
+  border: none;
+  border-bottom: 1px solid black;
+  width: ${props => props.width ? props.width : '40px'};
 `;
 
 export default SStorage;
