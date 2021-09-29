@@ -284,6 +284,7 @@ const Database = () => {
   useEffect(() => {
     connect2DB((DBInstance) => {
       getItemDataByKey();
+      getDBSize((total) => setTotalSize(total));
       closeDBConnection(DBInstance);
       setLoading(false);
     });
