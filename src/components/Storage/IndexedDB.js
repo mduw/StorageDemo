@@ -265,7 +265,7 @@ const Database = () => {
         }
       });
   };
-  const handleEmptyDB = () => emptyIndexedDB(() => setTotalSize(0));
+  const handleEmptyDB = () => emptyIndexedDB(getDBSize(total=>setTotalSize(total)));
   const handleDelByKey = () => {
     if (!key2Del) {
       alert("Key must NOT be empty");
