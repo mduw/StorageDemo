@@ -16,7 +16,9 @@ SStorage.Btn = styled(SDefault.Btn)`
   text-align: center;
   outline: none;
   opacity: 0.9;
-  &:hover { opacity: 1; }
+  &:hover {
+    opacity: 1;
+  }
 `;
 
 SStorage.InfoWrapper = styled.span`
@@ -34,6 +36,7 @@ SStorage.Section = styled.section`
   display: block;
   border-top: 1px solid lightgray;
   margin: 26px auto;
+  clear: both;
   height: 100px;
   width: 80%;
   padding: 0 10px;
@@ -50,14 +53,14 @@ SStorage.PlainSectionOuter = styled(SStorage.Section)`
   border: none;
 `;
 SStorage.Btn.Clear = styled(SStorage.Btn)`
-  background: #D44500;
+  background: #d44500;
   width: 100px;
 `;
 SStorage.Btn.ClearAll = styled(SStorage.Btn)`
   margin: -30px auto;
   width: 220px;
   float: right;
-  background: #D44500;
+  background: #d44500;
 `;
 
 SStorage.InputField = styled(SDefault.InputField)`
@@ -67,7 +70,17 @@ SStorage.InputField = styled(SDefault.InputField)`
   padding: 8px;
   border: none;
   border-bottom: 1px solid black;
-  width: ${props => props.width ? props.width : '40px'};
+  width: ${(props) => (props.width ? props.width : "40px")};
+`;
+
+SStorage.StaleData = styled.h3`
+  display: block;
+  margin: 10px 0;
+  color: red;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 export default SStorage;

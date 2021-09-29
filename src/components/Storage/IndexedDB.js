@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef, createRef } from "react";
-import { getStr, ONE_MB } from "../../lib/HelperFuncs";
+import { getStr, ONE_MB, ByteToMB } from "../../lib/HelperFuncs";
+import useMyStorageManager from "../../stores/MyStorageManager";
 import { InputField } from "./InputField";
 import SStorage from "./StyledComp";
 
@@ -11,6 +12,58 @@ export const STORES = {
 
 const channel = new BroadcastChannel("idb_changes");
 const SAMPLE_KEY = "myid";
+
+export function getTableSize(DBInstance, DBName) {
+  return new Promise((resolve, reject) => {
+    let size = 0;
+    let transaction = DBInstance.transaction([DBName])
+      .objectStore(DBName)
+      .openCursor();
+
+    transaction.onsuccess = function (event) {
+      let cursor = event.target.result;
+      if (cursor) {
+        let storedObject = cursor.value;
+        let json = JSON.stringify(storedObject);
+        size += json.length;
+        cursor.continue();
+      } else {
+        resolve(size);
+      }
+    }.bind(this);
+    transaction.onerror = function (err) {
+      reject("error in " + DBName + ": " + err);
+    };
+  });
+}
+
+export function getDBSize(postTask = null) {
+  connect2DB((DBInstance) => {
+    let tableNames = [...DBInstance.objectStoreNames];
+    let val = (function (tableNames, DBInstance) {
+      let tableSizeGetters = tableNames.reduce((acc, tableName) => {
+        acc.push(getTableSize(DBInstance, tableName));
+        return acc;
+      }, []);
+
+      return Promise.all(tableSizeGetters)
+        .then((sizes) => {
+          console.log("--------- " + DBInstance.name + " ---------");
+          tableNames.forEach((tableName, i) => {
+            console.log(tableName + "\t: " + ByteToMB(sizes[i]));
+          });
+          let totalDBSize = sizes.reduce(function (acc, val) {
+            return acc + val;
+          }, 0);
+          return totalDBSize;
+        })
+        .then((result) => {
+          closeDBConnection(DBInstance);
+          if (postTask) postTask(result);
+        });
+    })(tableNames, DBInstance);
+  });
+}
 
 export function print(msg) {
   console.log(msg);
@@ -31,7 +84,9 @@ export function connect2DB(postTask = null) {
       if (DBInstance.objectStoreNames.contains(store))
         DBInstance.deleteObjectStore(store);
       let objectStore = DBInstance.createObjectStore(store);
-      objectStore.put("1234", SAMPLE_KEY);
+      if (store === STORES.messages) {
+        objectStore.put("1234", SAMPLE_KEY);
+      }
     }
 
     connect2DB(postTask);
@@ -55,7 +110,7 @@ export function addData2IDB_Safe(
   postTask = null
 ) {
   const storeName = STORES.messages;
-  if (!data) data = getStr(itemSize * ONE_MB);
+  if (itemSize || !data) data = getStr(itemSize * ONE_MB);
   if (!key) key = `${new Date().toLocaleTimeString()}_msg_${itemSize}MB`;
   try {
     connect2DB((DBInstance) => {
@@ -110,6 +165,11 @@ export function deleteItemByKey_Safe(
         closeDBConnection(DBInstance);
         if (postTask) postTask();
       };
+      transaction.oncomplete = () => {
+        console.log("delete completed");
+        closeDBConnection(DBInstance);
+      };
+      transaction.commit();
     });
   } catch (error) {
     console.log("IndexedDB ERR:", error);
@@ -120,6 +180,10 @@ export const emptyIndexedDB = (cleanupTask = null) => {
   const delRequest = window.indexedDB.deleteDatabase(DB_NAME);
   delRequest.onsuccess = function () {
     console.log("IndexedDB: ", DB_NAME, "IS DELETED");
+    connect2DB((DBInstance) => {
+      closeDBConnection(DBInstance);
+    });
+
     if (cleanupTask) cleanupTask();
   };
   delRequest.onerror = function () {
@@ -130,11 +194,7 @@ export const emptyIndexedDB = (cleanupTask = null) => {
   };
 };
 
-export const retrieveItemByKey = (
-  storeName = STORES.messages,
-  key,
-  postTask = null
-) => {
+export const retrieveItemByKey = (storeName, key, postTask = null) => {
   try {
     connect2DB((DBInstance) => {
       const transaction = DBInstance.transaction([storeName], "readonly");
@@ -164,6 +224,7 @@ const Database = () => {
   const [itemValue, setItemValue] = useState("");
   const [singleItemSize, setSingleItemSize] = useState(1);
   const [withUpdate, setWithUpdate] = useState(false);
+  const updateQuota = useMyStorageManager((state) => state.updateQuota);
 
   channel.onmessage = (e) => {
     const { action, store, key } = e.data;
@@ -176,6 +237,10 @@ const Database = () => {
     }
   };
 
+  const handleDBSize = () => {
+    getDBSize();
+  };
+
   const handleSingleItemSize = (kMB) => setSingleItemSize(kMB);
   const handleAutoAddDB = () => {
     setAuto(!auto);
@@ -185,14 +250,18 @@ const Database = () => {
       alert("Key must NOT be empty");
     } else
       addData2IDB_Safe(singleItemSize, key2Del, itemValue, () => {
-        getItemDataByKey(STORES.messages, key2Del);
-        setTotalSize(totalSize + singleItemSize);
-        if (withUpdate) {
-          channel.postMessage({
-            action: "UPDATE",
-            store: "messages",
-            key: key2Del,
-          });
+        getDBSize((total) => setTotalSize(total));
+
+        if (key2Del === "myid") {
+          getItemDataByKey(STORES.messages, key2Del); // update current
+          if (withUpdate) {
+            channel.postMessage({
+              // update others
+              action: "UPDATE",
+              store: "messages",
+              key: key2Del,
+            });
+          }
         }
       });
   };
@@ -228,7 +297,7 @@ const Database = () => {
     if (auto) {
       autoAddTimer = setInterval(() => {
         addData2IDB_Safe(inpSize, null, null, () =>
-          setTotalSize(totalSize + inpSize)
+          getDBSize((total) => setTotalSize(total))
         );
       }, 1000);
     } else {
@@ -243,7 +312,7 @@ const Database = () => {
     <>
       <SStorage.Section style={{ height: "90px" }}>
         <SStorage.InfoWrapper>
-          IndexedDB = <SStorage.Value>{totalSize}MB</SStorage.Value>
+          IndexedDB = <SStorage.Value>{ByteToMB(totalSize)}</SStorage.Value>
         </SStorage.InfoWrapper>
         <SStorage.Btn.Clear disabled={loading} onClick={handleEmptyDB}>
           Reset
@@ -267,10 +336,14 @@ const Database = () => {
         <SStorage.Btn disabled={loading} onClick={handleAddDB}>
           Add
         </SStorage.Btn>
+        <SStorage.Btn disabled={loading} onClick={handleDBSize}>
+          Size
+        </SStorage.Btn>
         <InputField
           type="number"
           defaultVal=""
           placeholder="size"
+          width="50px"
           postTask={handleSingleItemSize}
         />
         <InputField
@@ -288,8 +361,8 @@ const Database = () => {
           postTask={onItemKeyChange}
         />
       </SStorage.PlainSectionOuter>
-      <SStorage.PlainSectionOuter>
-        <h3>Stale database due to multiple update</h3>
+      <SStorage.PlainSectionOuter style={{ height: "150px" }}>
+        <h4>Stale database due to multiple update</h4>
         <input
           type="checkbox"
           id="updateDummy"
@@ -298,9 +371,9 @@ const Database = () => {
           onChange={(e) => setWithUpdate(!withUpdate)}
         />
         <label htmlFor="updateDummy">Trigger update on other tabs</label>
-        <h3 style={{ margin: "10px 0", color: "red" }}>
+        <SStorage.StaleData>
           {SAMPLE_KEY} | {staleData}
-        </h3>
+        </SStorage.StaleData>
       </SStorage.PlainSectionOuter>
     </>
   );

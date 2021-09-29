@@ -1,6 +1,10 @@
-export const ONE_MB = 1000 * 1000;
+export const ONE_MB = 1024 * 1024;
 
-let guid = () => {
+export function randomNumber(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
+function guid() {
   let s4 = () => {
     return Math.floor((1 + Math.random()) * 0x10000)
       .toString(16)
@@ -20,27 +24,29 @@ let guid = () => {
     s4() +
     s4()
   );
-};
+}
 
 export const generateUID = () => {
-  return guid();
+  const id = guid();
+  return id;
 };
 
 export const isEmpty = (obj) =>
   obj === null || obj === undefined || Object.keys(obj).length === 0;
 
-export const ByteToMB = (val) => {
-  const opts = {
-    maximumFractionDigits: 1,
-  };
-  let result;
-  try {
-    result = new Intl.NumberFormat("en-us", opts).format(val / ONE_MB);
-  } catch (ex) {
-    result = Math.round(val / ONE_MB);
+export function ByteToMB(bytes) {
+  let thresh = 1024;
+  if (Math.abs(bytes) < thresh) {
+    return bytes + " B";
   }
-  return `${result} MB`;
-};
+  const units = ["KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+  let u = -1;
+  do {
+    bytes /= thresh;
+    ++u;
+  } while (Math.abs(bytes) >= thresh && u < units.length - 1);
+  return bytes.toFixed(1) + " " + units[u];
+}
 
 export function getStr(size = ONE_MB) {
   let chars = "abcdefghijklmnopqrstuvwxyz".split("");
@@ -52,4 +58,21 @@ export function getStr(size = ONE_MB) {
   }
 
   return random_data.join("");
+}
+
+export function shallowEqual(object1, object2) {
+  const keys1 = Object.keys(object1);
+  const keys2 = Object.keys(object2);
+
+  if (keys1.length !== keys2.length) {
+    return false;
+  }
+
+  for (let key of keys1) {
+    if (object1[key] !== object2[key]) {
+      return false;
+    }
+  }
+
+  return true;
 }

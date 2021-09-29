@@ -44,7 +44,7 @@ export const checkPersistentStorage = async (postTask) => {
   }
 };
 
-function fetchQuota(updateQuota) {
+export function fetchQuota(updateQuota) {
   if (!updateQuota) return;
   navigator.storage
     .estimate()
