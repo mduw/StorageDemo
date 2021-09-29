@@ -269,7 +269,7 @@ const Database = () => {
   const handleDelByKey = () => {
     if (!key2Del) {
       alert("Key must NOT be empty");
-    } else deleteItemByKey_Safe(key2Del, STORES.messages);
+    } else deleteItemByKey_Safe(key2Del, STORES.messages, ()=> getDBSize(total=>setTotalSize(total)));
   };
 
   const handleItemValue = (value) => setItemValue(value);
